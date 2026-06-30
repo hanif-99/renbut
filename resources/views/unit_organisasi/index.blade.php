@@ -21,8 +21,8 @@
                                     <th>No</th>
                                     <th>KODE</th>
                                     <th>NAMA UNOR</th>
-                                    <th>PERANGKAT DAERAH</th>
-                                    <th>UNOR ATASAN</th>
+                                    <th>OPD</th>
+                                    <th>ATASAN</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>

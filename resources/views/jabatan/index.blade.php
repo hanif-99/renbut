@@ -21,7 +21,7 @@
                                     <th>No</th>
                                     <th>KODE</th>
                                     <th>NAMA JABATAN</th>
-                                    <th>UNIT ORGANISASI</th>
+                                    <th>UNOR</th>
                                     <th>JENIS</th>
                                     <th>JENJANG</th>
                                     <th>K</th>

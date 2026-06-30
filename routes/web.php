@@ -10,6 +10,7 @@ use App\Http\Controllers\FormasiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\OrgChartController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -55,4 +56,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Import
     Route::get('/import', [ImportController::class, 'show'])->name('import.show');
     Route::post('/import', [ImportController::class, 'import'])->name('import.store');
+
+    // Peta Jabatan
+    Route::get('/organogram', [OrgChartController::class, 'index'])->name('organogram.index');
+    Route::get('/organogram/data', [OrgChartController::class, 'data'])->name('organogram.data');
+
 });
