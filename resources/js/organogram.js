@@ -2,29 +2,48 @@ import cytoscape from 'cytoscape';
 import cytoscapeDagre from 'cytoscape-dagre';
 import dagre from 'dagre';
 
-// Register plugin (cytoscape-dagre expects dagre present)
+// register plugin
 cytoscape.use(cytoscapeDagre);
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const container = document.getElementById('orgchart');
-  if (!container) return;
+let cyInstance = null;
 
-  // Ambil data graf dari backend
+async function fetchElements(pd = '') {
+  const url = '/organogram/data' + (pd ? `?pd=${encodeURIComponent(pd)}` : '');
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error('Failed to fetch organogram data');
+  return await res.json();
+}
+
+async function fetchJabatanDetail(jid) {
+  const url = `/organogram/detail/${encodeURIComponent(jid)}`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error('Failed to fetch jabatan detail');
+  return await res.json();
+}
+
+function destroyCy() {
+  if (cyInstance) {
+    try {
+      cyInstance.destroy();
+    } catch (e) {}
+    cyInstance = null;
+  }
+}
+
+async function renderGraph(container, pd = '') {
+  container.innerHTML = ''; // clear
   let elements;
   try {
-    const res = await fetch('/organogram/data');
-    if (!res.ok) {
-      container.innerText = 'Gagal memuat data peta jabatan';
-      return;
-    }
-    elements = await res.json();
+    elements = await fetchElements(pd);
   } catch (err) {
-    container.innerText = 'Gagal memuat data peta jabatan (network error)';
+    container.innerText = 'Gagal memuat data peta jabatan';
     console.error(err);
     return;
   }
 
-  const cy = cytoscape({
+  destroyCy();
+
+  cyInstance = cytoscape({
     container,
     elements,
     style: [
@@ -83,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ],
     layout: {
       name: 'dagre',
-      rankDir: 'TB', // top-to-bottom
+      rankDir: 'TB',
       nodeSep: 50,
       edgeSep: 10,
       rankSep: 80
@@ -91,13 +110,72 @@ document.addEventListener('DOMContentLoaded', async () => {
     wheelSensitivity: 0.2
   });
 
-  cy.fit();
+  cyInstance.fit();
 
-  // Klik node => tampilkan info sederhana (ganti dengan modal/detail bila perlu)
-  cy.on('tap', 'node', (evt) => {
+  // Klik node -> jika jabatan, fetch detail dan tunjukkan modal
+  cyInstance.on('tap', 'node', async (evt) => {
     const node = evt.target;
-    const label = node.data('label') || '—';
-    // Anda bisa ganti alert dengan modal atau fetch detail endpoint
-    alert(label);
+    const type = node.data('type');
+    if (type === 'jabatan') {
+      const realId = node.data('realId');
+      try {
+        const detail = await fetchJabatanDetail(realId);
+        // isi modal
+        document.getElementById('jab-nama').innerText = detail.nama || '-';
+        document.getElementById('jab-kode').innerText = detail.kode || '-';
+        document.getElementById('jab-pd').innerText = detail.perangkat_daerah || '-';
+        document.getElementById('jab-unit').innerText = detail.unit || '-';
+        document.getElementById('jab-k').innerText = detail.kebutuhan ?? 0;
+        document.getElementById('jab-b').innerText = detail.bezetting ?? 0;
+        document.getElementById('jab-gap').innerText = detail.gap ?? 0;
+
+        // tampilkan modal (Bootstrap 5)
+        const modalEl = document.getElementById('orgchartModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+      } catch (err) {
+        console.error(err);
+        alert('Gagal memuat detail jabatan');
+      }
+    }
+  });
+
+  // responsif
+  window.addEventListener('resize', () => {
+    if (cyInstance) {
+      cyInstance.resize();
+      cyInstance.fit();
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('orgchart');
+  if (!container) return;
+
+  const select = document.getElementById('pd-select');
+  const defaultPd = select?.dataset?.defaultPd || '';
+  if (defaultPd) {
+    select.value = defaultPd;
+    renderGraph(container, defaultPd);
+  } else {
+    // load all
+    renderGraph(container, '');
+  }
+
+  const btnLoad = document.getElementById('btn-load-organogram');
+  btnLoad?.addEventListener('click', () => {
+    const pd = select.value || '';
+    renderGraph(container, pd);
+  });
+
+  // load on change (optional)
+  select?.addEventListener('change', () => {
+    const pd = select.value || '';
+    // debounce simple
+    if (window.__org_reload_timeout) clearTimeout(window.__org_reload_timeout);
+    window.__org_reload_timeout = setTimeout(() => {
+      renderGraph(container, pd);
+    }, 300);
   });
 });

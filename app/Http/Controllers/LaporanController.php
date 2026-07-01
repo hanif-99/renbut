@@ -11,6 +11,10 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+// import export classes
+use App\Exports\FormasiExport;
+use App\Exports\GapAnalysisExport;
+
 class LaporanController extends Controller
 {
     public function summary(): View
@@ -37,10 +41,12 @@ class LaporanController extends Controller
 
     public function gapAnalysis(): View
     {
+        // ambil jabatan dengan relasi
         $jabatan = Jabatan::with('unitOrganisasi.perangkatDaerah')
             ->get()
             ->map(function ($j) {
-                $j->gap = $j->b - $j->k;
+                // tetap set gap agar view konsisten (gap = B - K)
+                $j->gap = ((int) $j->b) - ((int) $j->k);
                 return $j;
             });
 
@@ -59,7 +65,28 @@ class LaporanController extends Controller
         $filename = "Laporan_Formasi_ASN_{$tahun}.xlsx";
         
         return Excel::download(
-            new \App\Exports\FormasiExport($formasi, $tahun),
+            new FormasiExport($formasi, $tahun),
+            $filename
+        );
+    }
+
+    /**
+     * Export khusus untuk Gap Analysis (data K, B, Gap, Status)
+     */
+    public function exportGapExcel()
+    {
+        // ambil semua jabatan dengan relasi (sama seperti di view gapAnalysis)
+        $jabatan = Jabatan::with('unitOrganisasi.perangkatDaerah')
+            ->get()
+            ->map(function ($j) {
+                $j->gap = ((int) $j->b) - ((int) $j->k);
+                return $j;
+            });
+
+        $filename = "Laporan_Gap_Analysis.xlsx";
+
+        return Excel::download(
+            new GapAnalysisExport($jabatan),
             $filename
         );
     }

@@ -13,13 +13,13 @@ class Jabatan extends Model
 
     protected $table = 'jabatan';
     protected $fillable = [
-        'kode', 
-        'nama', 
-        'unit_organisasi_id', 
-        'jenis_jabatan_id', 
-        'jenjang_id', 
-        'kj', 
-        'b', 
+        'kode',
+        'nama',
+        'unit_organisasi_id',
+        'jenis_jabatan_id',
+        'jenjang_id',
+        'kj',
+        'b',
         'k'
     ];
 
@@ -53,8 +53,14 @@ class Jabatan extends Model
         return $this->hasMany(SisaKebutuhan2032::class);
     }
 
+    /**
+     * Gap attribute: Bezetting (b) dikurangi Kebutuhan (k).
+     * - Negatif => Kekurangan (B < K)
+     * - Nol => Terpenuhi
+     * - Positif => Kelebihan (B > K)
+     */
     public function getGapAttribute()
     {
-        return $this->b - $this->k;
+        return ((int) $this->b) - ((int) $this->k);
     }
 }

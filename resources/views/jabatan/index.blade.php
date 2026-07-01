@@ -24,8 +24,8 @@
                                     <th>UNOR</th>
                                     <th>JENIS</th>
                                     <th>JENJANG</th>
-                                    <th>K</th>
                                     <th>B</th>
+                                    <th>K</th>
                                     <th>+/-</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -39,8 +39,8 @@
                                         <td>{{ $item->unitOrganisasi->nama ?? '-' }}</td>
                                         <td>{{ $item->jenisJabatan->nama ?? '-' }}</td>
                                         <td>{{ $item->jenjang->nama ?? '-' }}</td>
-                                        <td><span class="badge bg-warning">{{ $item->b }}</span></td>
-                                        <td><span class="badge bg-info">{{ $item->k }}</span></td>
+                                        <td><span class="badge bg-info">{{ $item->b }}</span></td>
+                                        <td><span class="badge bg-warning">{{ $item->k }}</span></td>
                                         <td>
                                             @if($item->b - $item->k > 0)
                                                 <span class="badge bg-danger">+{{ $item->b - $item->k }}</span>
