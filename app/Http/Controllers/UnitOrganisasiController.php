@@ -12,8 +12,12 @@ class UnitOrganisasiController extends Controller
 {
     public function index(): View
     {
-        $unitOrganisasi = UnitOrganisasi::with('perangkatDaerah')->get();
-        return view('unit_organisasi.index', compact('unitOrganisasi'));
+        // Kelompokkan Unit Organisasi berdasarkan Perangkat Daerah
+        $perangkatDaerah = PerangkatDaerah::with('unitOrganisasi')
+            ->orderBy('nama', 'asc')
+            ->get();
+        
+        return view('unit_organisasi.index', compact('perangkatDaerah'));
     }
 
     public function create(): View

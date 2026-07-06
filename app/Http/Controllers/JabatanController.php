@@ -14,7 +14,12 @@ class JabatanController extends Controller
 {
     public function index(): View
     {
-        $jabatan = Jabatan::with('unitOrganisasi', 'jenisJabatan', 'jenjang')->get();
+        // Fetch dengan eager load dan urutkan: OPD > UNOR > Jabatan
+        $jabatan = Jabatan::with('unitOrganisasi.perangkatDaerah', 'jenisJabatan', 'jenjang')
+            ->orderBy('unit_organisasi_id', 'asc')
+            ->orderBy('nama', 'asc')
+            ->get();
+        
         return view('jabatan.index', compact('jabatan'));
     }
 
