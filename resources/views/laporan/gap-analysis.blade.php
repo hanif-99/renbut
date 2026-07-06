@@ -25,9 +25,9 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>No</th>
-                                <th>PERANGKAT DAERAH</th>
-                                <th>UNIT ORGANISASI</th>
-                                <th>KODE JABATAN</th>
+                                <th>OPD</th>
+                                <th>UNOR</th>
+                                <th>KODE</th>
                                 <th>NAMA JABATAN</th>
                                 <th>K</th>
                                 <th>B</th>

@@ -9,62 +9,95 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
+            --primary: #0b2545;
+            --primary-2: #0e3a66;
+            --secondary: #0b58a6;
+            --accent: #03a9f4;
             --success: #27ae60;
             --danger: #e74c3c;
-            --warning: #f39c12;
+            --muted: #6b7280;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ecf0f1;
+            background-color: #f3f6f9;
         }
 
+        /* Sidebar base */
         .sidebar {
-            background: linear-gradient(135deg, var(--primary) 0%, #34495e 100%);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-2) 100%);
             min-height: 100vh;
             color: white;
             padding: 20px 0;
         }
 
-        .sidebar a {
-            color: #ecf0f1;
-            text-decoration: none;
-            padding: 12px 20px;
-            display: block;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: rgba(255, 255, 255, 0.1);
-            border-left-color: var(--secondary);
+        /* Professional sidebar/menu styles */
+        .sidebar .navbar-brand {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+            padding-left: 18px;
+            padding-bottom: 12px;
+            letter-spacing: 0.4px;
         }
 
         .sidebar .nav-label {
-            color: #95a5a6;
+            color: rgba(230,238,248,0.75);
             font-size: 12px;
-            padding: 15px 20px 5px;
+            padding: 12px 18px 6px;
             text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .navbar-brand {
-            font-size: 18px;
             font-weight: 700;
-            color: white;
         }
 
+        /* Reduced font-size for sidebar items to avoid overly large labels */
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(230,238,248,0.95);
+            padding: 8px 14px;
+            margin: 6px 12px;
+            border-radius: 8px;
+            transition: all .18s ease-in-out;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px; /* adjusted smaller */
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .sidebar .nav-link:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.04);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* Active highlight */
+        .sidebar .nav-link.active {
+            background: linear-gradient(90deg, rgba(11,88,166,0.95) 0%, rgba(3,155,216,0.95) 100%);
+            color: #fff !important;
+            box-shadow: 0 8px 24px rgba(3, 103, 162, 0.14);
+            border-left: 4px solid rgba(255,255,255,0.12);
+        }
+
+        .sidebar .nav-link.active .fa {
+            color: rgba(255,255,255,0.95);
+        }
+
+        /* content & cards */
         .card {
             border: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
             border-radius: 8px;
         }
 
         .card-header {
-            background: linear-gradient(135deg, var(--primary) 0%, #34495e 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
             color: white;
             border: none;
         }
@@ -75,20 +108,20 @@
         }
 
         .btn-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
+            background-color: #0a4f94;
+            border-color: #0a4f94;
         }
 
         .kpi-card {
             background: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             margin-bottom: 15px;
         }
 
         .kpi-card h3 {
-            color: #7f8c8d;
+            color: var(--muted);
             font-size: 14px;
             margin-bottom: 10px;
         }
@@ -119,7 +152,7 @@
         }
 
         .dropdown-item:hover {
-            background-color: #ecf0f1;
+            background-color: #f2f6fb;
             color: var(--primary);
         }
 
@@ -130,9 +163,17 @@
         @media (max-width: 768px) {
             .sidebar {
                 min-height: auto;
+                padding-bottom: 10px;
             }
+            .sidebar .nav-link {
+                margin: 4px 8px;
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+            .sidebar .nav-label { padding-left: 10px; }
         }
     </style>
+
     @yield('css')
 </head>
 <body>
@@ -140,47 +181,52 @@
         <div class="row" style="min-height: 100vh;">
             <!-- Sidebar -->
             <div class="col-md-2 sidebar">
-                <div class="navbar-brand ps-3 pb-4">
+                <div class="navbar-brand ps-3 pb-2">
                     BKPSDM CIANJUR
                 </div>
 
                 <div class="nav-label">MENU UTAMA</div>
-                <a href="{{ route('dashboard') }}" class="@if(Route::currentRouteName() == 'dashboard') active @endif">
-                    <i class="fas fa-home"></i> Dashboard
+                <a href="{{ route('dashboard') }}" class="nav-link @if(Request::routeIs('dashboard')) active @endif">
+                    <i class="fas fa-home"></i> <span>Dashboard</span>
                 </a>
 
                 <div class="nav-label mt-3">MASTER DATA</div>
-                <a href="{{ route('perangkat_daerah.index') }}" class="@if(Route::currentRouteName() == 'perangkat_daerah.index' || Route::currentRouteName() == 'perangkat_daerah.create' || Route::currentRouteName() == 'perangkat_daerah.edit') active @endif">
-                    <i class="fas fa-building"></i> Perangkat Daerah
+                <a href="{{ route('perangkat_daerah.index') }}" class="nav-link @if(Request::routeIs('perangkat_daerah.*')) active @endif">
+                    <i class="fas fa-building"></i> <span>Perangkat Daerah</span>
                 </a>
-                <a href="{{ route('unit_organisasi.index') }}" class="@if(Route::currentRouteName() == 'unit_organisasi.index' || Route::currentRouteName() == 'unit_organisasi.create' || Route::currentRouteName() == 'unit_organisasi.edit') active @endif">
-                    <i class="fas fa-sitemap"></i> Unit Organisasi
+                <a href="{{ route('unit_organisasi.index') }}" class="nav-link @if(Request::routeIs('unit_organisasi.*')) active @endif">
+                    <i class="fas fa-sitemap"></i> <span>Unit Organisasi</span>
                 </a>
-                <a href="{{ route('jabatan.index') }}" class="@if(Route::currentRouteName() == 'jabatan.index' || Route::currentRouteName() == 'jabatan.create' || Route::currentRouteName() == 'jabatan.edit') active @endif">
-                    <i class="fas fa-briefcase"></i> Jabatan
+                <a href="{{ route('jabatan.index') }}" class="nav-link @if(Request::routeIs('jabatan.*')) active @endif">
+                    <i class="fas fa-briefcase"></i> <span>Jabatan</span>
                 </a>
 
                 <div class="nav-label mt-3">PERENCANAAN</div>
-                <a href="{{ route('formasi.index') }}" class="@if(Route::currentRouteName() == 'formasi.index' || Route::currentRouteName() == 'formasi.create' || Route::currentRouteName() == 'formasi.edit') active @endif">
-                    <i class="fas fa-calendar-alt"></i> Formasi ASN
+                {{-- Formasi ASN: aktif hanya bila route formasi.* kecuali formasi.yearly-plan --}}
+                <a href="{{ route('formasi.index') }}" class="nav-link @if(Request::routeIs('formasi.*') && !Request::routeIs('formasi.yearly-plan')) active @endif">
+                    <i class="fas fa-calendar-alt"></i> <span>Formasi ASN</span>
                 </a>
-                <a href="{{ route('formasi.yearly-plan') }}" class="@if(Route::currentRouteName() == 'formasi.yearly-plan') active @endif">
-                    <i class="fas fa-chart-bar"></i> Rencana Tahunan
+                {{-- Rencana Tahunan: aktif bila route yearly-plan --}}
+                <a href="{{ route('formasi.yearly-plan') }}" class="nav-link @if(Request::routeIs('formasi.yearly-plan')) active @endif">
+                    <i class="fas fa-chart-bar"></i> <span>Rencana Tahunan</span>
                 </a>
 
                 <div class="nav-label mt-3">LAPORAN</div>
-                <a href="{{ route('laporan.summary') }}" class="@if(Route::currentRouteName() == 'laporan.summary') active @endif">
-                    <i class="fas fa-file-alt"></i> Ringkasan
+                <a href="{{ route('laporan.summary') }}" class="nav-link @if(Request::routeIs('laporan.summary')) active @endif">
+                    <i class="fas fa-file-alt"></i> <span>Ringkasan</span>
                 </a>
-                <a href="{{ route('laporan.gap-analysis') }}" class="@if(Route::currentRouteName() == 'laporan.gap-analysis') active @endif">
-                    <i class="fas fa-chart-line"></i> Gap Analysis
+                <a href="{{ route('laporan.gap-analysis') }}" class="nav-link @if(Request::routeIs('laporan.gap-analysis')) active @endif">
+                    <i class="fas fa-chart-line"></i> <span>Gap Analysis</span>
+                </a>
+                <a href="{{ route('organogram.index') }}" class="nav-link @if(Request::routeIs('organogram.*')) active @endif">
+                    <i class="fas fa-sitemap"></i> <span>Peta Jabatan</span>
                 </a>
             </div>
 
             <!-- Main Content -->
             <div class="col-md-10 p-4">
                 <!-- Navbar -->
-                <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4" style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                         <div class="ms-auto d-flex align-items-center gap-3">
                             <!-- User Dropdown -->
                             <div class="user-menu dropdown">
@@ -234,6 +280,7 @@
         </div>
     </div>
 
+    <!-- Standard JS assets -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
@@ -272,5 +319,8 @@
     </script>
 
     @yield('js')
+    {{-- render pushed scripts (Vite / view-specific scripts) --}}
+    @stack('scripts')
+
 </body>
 </html>

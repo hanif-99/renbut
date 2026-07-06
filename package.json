@@ -24,6 +24,8 @@
         "cytoscape-dagre": "^4.0.0",
         "dagre": "^0.8.5",
         "datatables.net": "^2.3.8",
+        "install": "^0.13.0",
+        "npm": "^11.18.0",
         "sweetalert2": "^11.26.25"
     }
 }

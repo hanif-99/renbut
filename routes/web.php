@@ -19,11 +19,6 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-// (Publik) Organogram / Peta Jabatan - tidak dibatasi auth
-Route::get('/organogram', [OrgChartController::class, 'index'])->name('organogram.index');
-Route::get('/organogram/data', [OrgChartController::class, 'data'])->name('organogram.data');
-Route::get('/organogram/detail/{id}', [OrgChartController::class, 'detail'])->name('organogram.detail');
-
 // Auth Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -59,12 +54,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
     Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
 
-    Route::get('/laporan/summary', [LaporanController::class, 'summary'])->name('laporan.summary');
-    Route::get('/laporan/gap-analysis', [LaporanController::class, 'gapAnalysis'])->name('laporan.gap-analysis');
-    Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
-    Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
-
     // Export khusus Gap Analysis
     Route::get('/laporan/export-gap-excel', [LaporanController::class, 'exportGapExcel'])->name('laporan.export-gap-excel');
 
+    // Organogram / Peta Jabatan (Protected - requires auth & verified)
+    Route::get('/organogram', [OrgChartController::class, 'index'])->name('organogram.index');
+    Route::get('/organogram/data', [OrgChartController::class, 'data'])->name('organogram.data');
+    Route::get('/organogram/detail/{id}', [OrgChartController::class, 'detail'])->name('organogram.detail');
 });
