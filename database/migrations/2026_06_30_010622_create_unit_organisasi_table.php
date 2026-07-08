@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('unit_organisasi', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // Ini sudah harusnya auto-increment
             $table->string('kode', 20)->unique();
             $table->string('nama', 255);
             $table->foreignId('perangkat_daerah_id')

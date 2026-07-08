@@ -39,6 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('perangkat_daerah', PerangkatDaerahController::class);
 
     // Unit Organisasi
+    Route::get('perangkat_daerah/{id}/units', [UnitOrganisasiController::class, 'units'])->name('perangkat_daerah.units');
+    Route::get('unit_organisasi/search', [UnitOrganisasiController::class, 'search'])->name('unit_organisasi.search');
     Route::resource('unit_organisasi', UnitOrganisasiController::class);
 
     // Jabatan
@@ -54,10 +56,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/laporan/export-excel', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
     Route::get('/laporan/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
 
-    // Export khusus Gap Analysis
+    // Export Gap Analysis
     Route::get('/laporan/export-gap-excel', [LaporanController::class, 'exportGapExcel'])->name('laporan.export-gap-excel');
 
-    // Organogram / Peta Jabatan (Protected - requires auth & verified)
+    // Peta Jabatan (Protected - requires auth & verified)
     Route::get('/organogram', [OrgChartController::class, 'index'])->name('organogram.index');
     Route::get('/organogram/data', [OrgChartController::class, 'data'])->name('organogram.data');
     Route::get('/organogram/detail/{id}', [OrgChartController::class, 'detail'])->name('organogram.detail');

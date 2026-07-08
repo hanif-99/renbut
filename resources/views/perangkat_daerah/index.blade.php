@@ -8,9 +8,6 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-building"></i> Master Perangkat Daerah</h5>
-                <a href="{{ route('perangkat_daerah.create') }}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-plus"></i> Tambah Perangkat
-                </a>
             </div>
             <div class="card-body">
                 @if($perangkat->count() > 0)

@@ -4,328 +4,32 @@
 
 @section('css')
 <style>
-    /* Search Container */
-    .search-container {
-        margin-bottom: 20px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        justify-content: flex-end;
-        flex-wrap: wrap;
-    }
-
-    .search-box {
-        flex: 0 1 200px;
-        position: relative;
-    }
-
-    .search-box input {
-        width: 100%;
-        padding: 10px 35px 10px 14px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-
-    .search-box input:focus {
-        outline: none;
-        border-color: #0b58a6;
-        box-shadow: 0 0 0 3px rgba(11, 88, 166, 0.1);
-    }
-
-    /* Clear Button */
-    .search-clear-btn {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #999;
-        cursor: pointer;
-        font-size: 18px;
-        padding: 0;
-        display: none;
-        transition: all 0.2s ease;
-    }
-
-    .search-clear-btn:hover {
-        color: #333;
-    }
-
-    .search-box input:not(:placeholder-shown) ~ .search-clear-btn {
-        display: block;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 8px;
-    }
-
-    .btn-toggle {
-        padding: 9px 15px;
-        border: none;
-        border-radius: 6px;
-        background-color: #0b58a6;
-        color: white;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        white-space: nowrap;
-        min-width: 120px;
-        justify-content: center;
-    }
-
-    .btn-toggle:hover {
-        background-color: #0a4f94;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(11, 88, 166, 0.2);
-    }
-
-    /* OPD Header */
-    .opd-header {
-        background-color: #f8f9fa;
-        border-left: 4px solid #ccc;
-        color: #333;
-        font-weight: 600;
-        padding: 14px 16px;
-        margin-top: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-radius: 6px;
-        border: 1px solid #e0e0e0;
-    }
-
-    .opd-header:first-of-type {
-        margin-top: 0;
-    }
-
-    .opd-header:hover {
-        background-color: #eeeeee;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        border-color: #0b58a6;
-    }
-
-    .opd-header:not(.collapsed) {
-        border-left-color: #0b58a6;
-    }
-
-    .opd-header-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 14px;
-    }
-
-    .opd-header-title i {
-        color: #0b58a6;
-        width: 20px;
-        text-align: center;
-    }
-
-    .opd-name {
-        font-weight: 600;
-        color: #0b2545;
-    }
-
-    .unit-count-badge {
-        background: #e3f2fd;
-        color: #0b58a6;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 400;
-    }
-
-    .toggle-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 20px;
-        height: 20px;
-        color: #0b58a6;
-        transition: transform 0.3s ease;
-        font-size: 12px;
-        transform: rotate(-90deg);
-    }
-
-    .opd-header:not(.collapsed) .toggle-icon {
-        transform: rotate(0deg);
-    }
-
-    /* Unit Details */
-    .unit-details {
-        display: none;
-        padding: 12px 16px 16px 16px;
-        background-color: #fafafa;
-        margin-bottom: 10px;
-        border-radius: 0 0 6px 6px;
-        border: 1px solid #e0e0e0;
-        border-top: none;
-        transition: all 0.3s ease;
-    }
-
-    .unit-details:not(.hidden) {
-        display: block;
-    }
-
-    /* Unit Row */
-    .unit-row {
-        display: grid;
-        grid-template-columns: 40px 85px 1fr 250px auto;
-        gap: 12px;
-        align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid #e8e8e8;
-        transition: all 0.2s ease;
-    }
-
-    .unit-row:hover {
-        background-color: #f0f7ff;
-        padding-left: 8px;
-        padding-right: 8px;
-        margin: 0 -8px;
-        border-radius: 4px;
-    }
-
-    .unit-row:last-child {
-        border-bottom: none;
-    }
-
-    .unit-row.hidden-search {
-        display: none !important;
-    }
-
-    .unit-no {
-        font-weight: 400;
-        color: #0b58a6;
-        text-align: center;
-        font-size: 13px;
-    }
-
-    .unit-kode {
-        background: #e3f2fd;
-        color: #0b58a6;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: 400;
-        font-size: 12px;
-        text-align: center;
-    }
-
-    .unit-info {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-    }
-
-    .unit-nama {
-        font-weight: 400;
-        color: #333;
-        font-size: 14px;
-    }
-
-    .unit-atasan {
-        color: #666;
-        font-size: 12px;
-    }
-
-    .unit-atasan-empty {
-        color: #bbb;
-    }
-
-    .unit-actions {
-        display: flex;
-        gap: 6px;
-        justify-content: flex-end;
-    }
-
-    .btn-action {
-        padding: 6px 10px;
-        font-size: 12px;
-        border-radius: 4px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-edit {
-        background-color: #ffc107;
-        color: #333;
-    }
-
-    .btn-edit:hover {
-        background-color: #ffb300;
-        transform: translateY(-2px);
-    }
-
-    .btn-delete {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    .btn-delete:hover {
-        background-color: #c82333;
-        transform: translateY(-2px);
-    }
-
-    .no-data-message {
-        padding: 16px;
-        text-align: center;
-        color: #999;
-        font-size: 13px;
-    }
-
-    .no-data-message i {
-        font-size: 20px;
-        margin-bottom: 8px;
-        opacity: 0.5;
-    }
-
-    .no-results {
-        padding: 40px 20px;
-        text-align: center;
-        color: #999;
-        font-size: 14px;
-    }
-
-    .no-results i {
-        font-size: 48px;
-        margin-bottom: 15px;
-        opacity: 0.5;
-    }
-
-    @media (max-width: 768px) {
-        .search-container {
-            justify-content: flex-start;
-            flex-direction: column;
-        }
-
-        .search-box {
-            flex: 1 1 100%;
-            min-width: 100%;
-        }
-
-        .unit-row {
-            grid-template-columns: 1fr;
-            gap: 8px;
-        }
-
-        .unit-actions {
-            justify-content: flex-start;
-        }
-    }
+    .search-container { margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+    .search-box { flex: 0 1 200px; position: relative; }
+    .search-box input { width: 100%; padding: 10px 35px 10px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease; }
+    .search-box input:focus { outline: none; border-color: #0b58a6; box-shadow: 0 0 0 3px rgba(11, 88, 166, 0.1); }
+    .search-clear-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; font-size: 18px; padding: 0; display: none; transition: all 0.2s ease; }
+    .search-box input:not(:placeholder-shown) ~ .search-clear-btn { display:block; }
+    .opd-header { background-color:#f8f9fa; border-left:4px solid #ccc; color:#333; font-weight:600; padding:14px 16px; margin-top:12px; cursor:pointer; transition:all 0.3s ease; display:flex; justify-content:space-between; align-items:center; border-radius:6px; border:1px solid #e0e0e0;}
+    .opd-header-title { display:flex; align-items:center; gap:12px; font-size:14px; }
+    .opd-name { font-weight:600; color:#0b2545; }
+    .unit-count-badge { background:#e3f2fd; color:#0b58a6; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:400; }
+    .toggle-icon { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; color:#0b58a6; transition:transform 0.3s ease; font-size:12px; transform:rotate(-90deg); }
+    .opd-header:not(.collapsed) .toggle-icon { transform: rotate(0deg); }
+    .unit-details { display:none; padding:12px 16px 16px 16px; background-color:#fafafa; margin-bottom:10px; border-radius:0 0 6px 6px; border:1px solid #e0e0e0; border-top:none; transition:all 0.3s ease; }
+    .unit-row { display:grid; grid-template-columns: 40px 85px 1fr 250px auto; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid #e8e8e8; transition:all 0.2s ease; }
+    .unit-row:hover { background-color:#f0f7ff; padding-left:8px; padding-right:8px; margin:0 -8px; border-radius:4px; }
+    .unit-no { font-weight:400; color:#0b58a6; text-align:center; font-size:13px; }
+    .unit-kode { background:#e3f2fd; color:#0b58a6; padding:4px 8px; border-radius:4px; font-weight:400; font-size:12px; text-align:center; }
+    .unit-info { display:flex; flex-direction:column; gap:3px; }
+    .unit-nama { font-weight:400; color:#333; font-size:14px; }
+    .unit-atasan { color:#666; font-size:12px; }
+    .unit-actions { display:flex; gap:6px; justify-content:flex-end; }
+    .btn-action { padding:6px 10px; font-size:12px; border-radius:4px; border:none; cursor:pointer; transition:all 0.2s ease; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-edit { background-color:#ffc107; color:#333; }
+    .btn-delete { background-color:#dc3545; color:white; }
+    .no-results { padding:40px 20px; text-align:center; color:#999; font-size:14px; }
+    @media (max-width:768px) { .search-container { justify-content:flex-start; flex-direction:column; } .unit-row { grid-template-columns:1fr; gap:8px; } .unit-actions { justify-content:flex-start; } }
 </style>
 @endsection
 
@@ -341,18 +45,12 @@
             </div>
             <div class="card-body">
                 @if($perangkatDaerah->count() > 0)
-                    <!-- Search & Control Bar -->
+                    <!-- Search Bar (EXPAND button removed) -->
                     <div class="search-container">
                         <div class="search-box">
-                            <input type="text" id="searchInput" placeholder="Search . . ." />
+                            <input type="text" id="searchInput" placeholder="Search . . ." autocomplete="off" />
                             <button class="search-clear-btn" onclick="clearSearch()" title="Clear">
                                 <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="button-group">
-                            <button class="btn-toggle" id="toggleBtn" onclick="toggleAll()">
-                                <i class="fas fa-chevron-down" id="toggleIcon"></i>
-                                <span id="toggleText">Expand</span>
                             </button>
                         </div>
                     </div>
@@ -360,11 +58,6 @@
                     <!-- OPD Container -->
                     <div id="opdContainer">
                         @foreach($perangkatDaerah as $opd)
-                            @php
-                                $unitCount = $opd->unitOrganisasi->count();
-                            @endphp
-
-                            <!-- OPD Header - COLLAPSED BY DEFAULT -->
                             <div class="opd-header collapsed" 
                                  onclick="toggleOPD(this)" 
                                  data-opd-id="{{ $opd->id }}"
@@ -375,53 +68,12 @@
                                     </span>
                                     <i class="fas fa-building"></i>
                                     <span class="opd-name">{{ $opd->nama }}</span>
-                                    <span class="unit-count-badge">{{ $unitCount }} Unit</span>
+                                    <span class="unit-count-badge">{{ $opd->unit_organisasi_count }} Unit</span>
                                 </div>
                             </div>
 
-                            <!-- Unit Details - HIDDEN BY DEFAULT -->
-                            <div class="unit-details hidden" id="details-{{ $opd->id }}">
-                                @if($unitCount > 0)
-                                    @foreach($opd->unitOrganisasi as $key => $unit)
-                                        <div class="unit-row" 
-                                             data-search-text="{{ strtolower($unit->nama . ' ' . $unit->kode . ' ' . $opd->nama) }}"
-                                             data-opd-id="{{ $opd->id }}">
-                                            <div class="unit-no">{{ $key + 1 }}</div>
-                                            <div class="unit-kode">{{ $unit->kode }}</div>
-                                            <div class="unit-info">
-                                                <div class="unit-nama">{{ $unit->nama }}</div>
-                                                <div class="unit-atasan">
-                                                    @if($unit->unor_atasan)
-                                                        Atasan: {{ $unit->unor_atasan }}
-                                                    @else
-                                                        <span class="unit-atasan-empty">-</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="unit-actions">
-                                                <a href="{{ route('unit_organisasi.edit', $unit->id) }}" 
-                                                   class="btn-action btn-edit" title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('unit_organisasi.destroy', $unit->id) }}" 
-                                                      method="POST" style="display:inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn-action btn-delete" 
-                                                            onclick="confirmDelete(event)" title="Hapus">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="no-data-message">
-                                        <i class="fas fa-inbox"></i>
-                                        <p>Belum ada Unit Organisasi</p>
-                                    </div>
-                                @endif
-                            </div>
+                            <!-- Unit Details - akan diisi via AJAX -->
+                            <div class="unit-details hidden" id="details-{{ $opd->id }}" data-loaded="0" data-current-page="0"></div>
                         @endforeach
                     </div>
                 @else
@@ -437,157 +89,254 @@
 
 @section('js')
 <script>
-let isExpandedMode = false;
+
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+const unitsBaseUrl = "{{ url('perangkat_daerah') }}";
+const searchUrl = "{{ route('unit_organisasi.search') }}";
+const unitBaseUrl = "{{ url('unit_organisasi') }}";
+
+let searchDebounceTimer = null;
 
 function toggleOPD(headerElement) {
+    if (!headerElement) return;
     const opdId = headerElement.getAttribute('data-opd-id');
     const detailsElement = document.getElementById('details-' + opdId);
-    
-    headerElement.classList.toggle('collapsed');
-    
-    if (detailsElement.classList.contains('hidden')) {
-        detailsElement.classList.remove('hidden');
-    } else {
-        detailsElement.classList.add('hidden');
-    }
-}
+    if (!detailsElement) return;
 
-function toggleAll() {
-    isExpandedMode = !isExpandedMode;
-    const toggleBtn = document.getElementById('toggleBtn');
-    const toggleIcon = document.getElementById('toggleIcon');
-    const toggleText = document.getElementById('toggleText');
-    
-    const headers = document.querySelectorAll('.opd-header');
-    headers.forEach(header => {
-        const opdId = header.getAttribute('data-opd-id');
-        const detailsElement = document.getElementById('details-' + opdId);
-        
-        // Hanya toggle yang visible
-        if (header.offsetParent !== null) {
-            if (isExpandedMode) {
-                header.classList.remove('collapsed');
-                detailsElement.classList.remove('hidden');
-            } else {
-                header.classList.add('collapsed');
-                detailsElement.classList.add('hidden');
-            }
-        }
-    });
-    
-    // Update button appearance
-    if (isExpandedMode) {
-        toggleIcon.classList.remove('fa-chevron-down');
-        toggleIcon.classList.add('fa-chevron-up');
-        toggleText.textContent = 'Collapse';
-    } else {
-        toggleIcon.classList.remove('fa-chevron-up');
-        toggleIcon.classList.add('fa-chevron-down');
-        toggleText.textContent = 'Expand';
+    if (detailsElement.dataset.loaded === '0') {
+        loadUnits(opdId, 1);
     }
+
+    headerElement.classList.toggle('collapsed');
+    detailsElement.classList.toggle('hidden');
 }
 
 function clearSearch() {
     const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
     searchInput.value = '';
     searchInput.focus();
-    
-    // Trigger search event
-    searchInput.dispatchEvent(new Event('keyup'));
-}
-
-// Search Functionality - IMPROVED
-const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('keyup', function(e) {
-    const searchText = e.target.value.toLowerCase().trim();
-    const container = document.getElementById('opdContainer');
     const headers = document.querySelectorAll('.opd-header');
-    let hasResults = false;
-
-    if (searchText === '') {
-        // Clear search - tampilkan semua dan collapse
-        headers.forEach(header => {
-            header.style.display = '';
-            const opdId = header.getAttribute('data-opd-id');
-            const detailsElement = document.getElementById('details-' + opdId);
-            const unitRows = detailsElement.querySelectorAll('.unit-row');
-            
-            header.classList.add('collapsed');
-            detailsElement.classList.add('hidden');
-            unitRows.forEach(row => row.classList.remove('hidden-search'));
-            detailsElement.style.display = '';
-        });
-        
-        isExpandedMode = false;
-        updateToggleButton();
-        
-        let noResults = document.getElementById('noResults');
-        if (noResults) noResults.remove();
-        return;
-    }
-
-    // Proses search
     headers.forEach(header => {
         const opdId = header.getAttribute('data-opd-id');
-        const headerSearchText = header.getAttribute('data-search-text');
-        const detailsElement = document.getElementById('details-' + opdId);
-        const unitRows = detailsElement.querySelectorAll('.unit-row');
-        
-        let headerMatches = headerSearchText.includes(searchText);
-        let visibleUnits = 0;
-
-        // Check unit rows - SEMUA ditampilkan jika match
-        unitRows.forEach(row => {
-            const rowSearchText = row.getAttribute('data-search-text');
-            if (rowSearchText.includes(searchText)) {
-                row.classList.remove('hidden-search');
-                visibleUnits++;
-            } else {
-                row.classList.add('hidden-search');
-            }
-        });
-
-        // Show/hide header dan details
-        if (headerMatches || visibleUnits > 0) {
-            header.style.display = '';
-            detailsElement.style.display = '';
-            header.classList.remove('collapsed');
-            detailsElement.classList.remove('hidden');
-            hasResults = true;
-        } else {
-            header.style.display = 'none';
-            detailsElement.style.display = 'none';
+        const details = document.getElementById('details-' + opdId);
+        if (details) {
+            details.style.display = 'none';
+            details.classList.add('hidden');
         }
+        header.style.display = '';
+        header.classList.add('collapsed');
     });
+    const noResults = document.getElementById('noResults');
+    if (noResults) noResults.remove();
+}
 
-    // Show/hide "no results" message
-    let noResults = document.getElementById('noResults');
-    if (!hasResults && searchText !== '') {
-        if (!noResults) {
-            noResults = document.createElement('div');
-            noResults.id = 'noResults';
-            noResults.className = 'no-results';
-            noResults.innerHTML = '<i class="fas fa-search"></i><p>Tidak ada hasil yang cocok</p>';
-            container.appendChild(noResults);
-        }
-    } else {
-        if (noResults) noResults.remove();
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            const q = e.target.value.trim();
+            if (q === '') {
+                clearSearch();
+                return;
+            }
+            if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                serverSearch(q);
+            }, 300);
+        });
     }
 });
 
-function updateToggleButton() {
-    const toggleIcon = document.getElementById('toggleIcon');
-    const toggleText = document.getElementById('toggleText');
-    
-    if (isExpandedMode) {
-        toggleIcon.classList.remove('fa-chevron-down');
-        toggleIcon.classList.add('fa-chevron-up');
-        toggleText.textContent = 'Collapse';
-    } else {
-        toggleIcon.classList.remove('fa-chevron-up');
-        toggleIcon.classList.add('fa-chevron-down');
-        toggleText.textContent = 'Expand';
+async function loadUnits(opdId, page = 1) {
+    const detailsElement = document.getElementById('details-' + opdId);
+    if (!detailsElement) return;
+    detailsElement.innerHTML = '<p>Loading…</p>';
+    detailsElement.style.display = '';
+
+    const perPage = 50;
+    const url = `${unitsBaseUrl}/${opdId}/units?per_page=${perPage}&page=${page}`;
+    try {
+        const res = await fetch(url, {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        });
+        if (!res.ok) {
+            let txt = await res.text();
+            console.error('Non-OK response for loadUnits:', res.status, txt);
+            detailsElement.innerHTML = `<p class="text-danger">Gagal memuat data (HTTP ${res.status}). Periksa console/network.</p>`;
+            return;
+        }
+        const json = await res.json();
+        renderUnitsIntoDetails(detailsElement, json, opdId);
+    } catch (e) {
+        console.error('Error loadUnits:', e);
+        detailsElement.innerHTML = '<p class="text-danger">Gagal memuat data (cek console).</p>';
     }
+}
+
+function renderUnitsIntoDetails(detailsElement, json, opdId) {
+    const units = json.data || [];
+    const perPage = json.per_page || 50;
+    const currentPage = json.current_page || 1;
+    const lastPage = json.last_page || 1;
+
+    if (units.length === 0) {
+        detailsElement.innerHTML = '<div class="no-data-message"><i class="fas fa-inbox"></i><p>Belum ada Unit Organisasi</p></div>';
+        detailsElement.dataset.loaded = '1';
+        detailsElement.dataset.currentPage = '0';
+        return;
+    }
+
+    let html = '<div class="unit-list">';
+    units.forEach((u, idx) => {
+        const no = ((currentPage - 1) * perPage) + (idx + 1);
+        html += `
+            <div class="unit-row" data-search-text="${(u.nama + ' ' + u.kode).toLowerCase()}" data-opd-id="${u.perangkat_daerah_id}">
+                <div class="unit-no">${no}</div>
+                <div class="unit-kode">${escapeHtml(u.kode)}</div>
+                <div class="unit-info">
+                    <div class="unit-nama">${escapeHtml(u.nama)}</div>
+                    <div class="unit-atasan">${u.unor_atasan ? 'Atasan: ' + escapeHtml(u.unor_atasan) : '<span class="unit-atasan-empty">-</span>'}</div>
+                </div>
+                <div class="unit-actions">
+                    <a href="${unitBaseUrl}/${u.id}/edit" class="btn-action btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                    <button class="btn-action btn-delete" onclick="deleteUnit(${u.id}, ${u.perangkat_daerah_id})" title="Hapus"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+
+    html += `<div class="mt-3 d-flex justify-content-center align-items-center gap-2">`;
+    if (currentPage > 1) {
+        html += `<button class="btn btn-outline-secondary btn-sm" onclick="loadUnits(${opdId}, ${currentPage - 1})">Prev</button>`;
+    }
+    html += `<span>Halaman ${currentPage} / ${lastPage}</span>`;
+    if (currentPage < lastPage) {
+        html += `<button class="btn btn-outline-secondary btn-sm" onclick="loadUnits(${opdId}, ${currentPage + 1})">Next</button>`;
+    }
+    html += `</div>`;
+
+    detailsElement.innerHTML = html;
+    detailsElement.dataset.loaded = '1';
+    detailsElement.dataset.currentPage = currentPage.toString();
+}
+
+async function serverSearch(query) {
+    const container = document.getElementById('opdContainer');
+    if (!container) return;
+    container.innerHTML = '<p>Searching…</p>';
+
+    const perPage = 200;
+    const url = `${searchUrl}?q=${encodeURIComponent(query)}&per_page=${perPage}`;
+    try {
+        const res = await fetch(url, {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            console.error('Search non-OK response', res.status, txt);
+            container.innerHTML = `<p class="text-danger">Gagal melakukan pencarian (HTTP ${res.status}).</p>`;
+            return;
+        }
+        const json = await res.json();
+        renderSearchResults(container, json);
+    } catch (e) {
+        console.error('Error serverSearch:', e);
+        container.innerHTML = '<p class="text-danger">Gagal melakukan pencarian (cek console).</p>';
+    }
+}
+
+function renderSearchResults(container, json) {
+    const units = json.data || [];
+    if (units.length === 0) {
+        container.innerHTML = '<div id="noResults" class="no-results"><i class="fas fa-search"></i><p>Tidak ada hasil yang cocok</p></div>';
+        return;
+    }
+
+    const grouped = {};
+    units.forEach(u => {
+        const pdName = (u.perangkat_daerah && u.perangkat_daerah.nama) ? u.perangkat_daerah.nama : ('PD #' + u.perangkat_daerah_id);
+        if (!grouped[pdName]) grouped[pdName] = [];
+        grouped[pdName].push(u);
+    });
+
+    let html = '';
+    Object.keys(grouped).forEach(pdName => {
+        const arr = grouped[pdName];
+        html += `<div class="opd-header" style="margin-top:12px;">
+                    <div class="opd-header-title">
+                        <i class="fas fa-building"></i>
+                        <span class="opd-name">${escapeHtml(pdName)}</span>
+                        <span class="unit-count-badge">${arr.length} Unit</span>
+                    </div>
+                 </div>`;
+        html += `<div class="unit-details" style="display:block; padding:12px 16px 16px 16px;">`;
+        arr.forEach((u, idx) => {
+            html += `
+                <div class="unit-row">
+                    <div class="unit-no">${idx + 1}</div>
+                    <div class="unit-kode">${escapeHtml(u.kode)}</div>
+                    <div class="unit-info">
+                        <div class="unit-nama">${escapeHtml(u.nama)}</div>
+                        <div class="unit-atasan">${u.unor_atasan ? 'Atasan: ' + escapeHtml(u.unor_atasan) : '<span class="unit-atasan-empty">-</span>'}</div>
+                    </div>
+                    <div class="unit-actions">
+                        <a href="${unitBaseUrl}/${u.id}/edit" class="btn-action btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                        <button class="btn-action btn-delete" onclick="deleteUnit(${u.id}, ${u.perangkat_daerah_id})" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+async function deleteUnit(id, opdId) {
+    if (!confirm('Yakin hapus unit ini?')) return;
+    try {
+        const res = await fetch(`${unitBaseUrl}/${id}`, {
+            method: 'DELETE',
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            }
+        });
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok) {
+            const txt = await res.text();
+            console.error('Delete non-OK', res.status, txt);
+            alert('Gagal menghapus unit (HTTP ' + res.status + ').');
+            return;
+        }
+        let json = {};
+        if (contentType.includes('application/json')) json = await res.json();
+        if (json.success) {
+            const detailsElement = document.getElementById('details-' + opdId);
+            if (detailsElement && detailsElement.dataset.currentPage && detailsElement.dataset.currentPage !== '0') {
+                loadUnits(opdId, parseInt(detailsElement.dataset.currentPage || '1', 10));
+            } else {
+                loadUnits(opdId, 1);
+            }
+        } else {
+            alert(json.message || 'Gagal menghapus unit.');
+        }
+    } catch (e) {
+        console.error('Error deleteUnit:', e);
+        alert('Terjadi kesalahan saat menghapus (cek console).');
+    }
+}
+
+function escapeHtml(unsafe) {
+    if (unsafe === null || unsafe === undefined) return '';
+    return String(unsafe).replace(/[&<>"'`=\/]/g, function (s) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;' })[s];
+    });
 }
 </script>
 @endsection

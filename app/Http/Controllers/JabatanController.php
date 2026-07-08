@@ -14,13 +14,51 @@ class JabatanController extends Controller
 {
     public function index(): View
     {
-        // Fetch dengan eager load dan urutkan: OPD > UNOR > Jabatan
-        $jabatan = Jabatan::with('unitOrganisasi.perangkatDaerah', 'jenisJabatan', 'jenjang')
-            ->orderBy('unit_organisasi_id', 'asc')
-            ->orderBy('nama', 'asc')
+        // Fetch dengan eager load dan sort by kode
+        $allJabatan = Jabatan::with('unitOrganisasi.perangkatDaerah', 'jenisJabatan', 'jenjang')
+            ->orderBy('kode', 'asc')
             ->get();
         
-        return view('jabatan.index', compact('jabatan'));
+        // Group berdasarkan kode induk (parent code)
+        $groupedJabatan = $this->groupByParentCode($allJabatan);
+        
+        return view('jabatan.index', compact('groupedJabatan', 'allJabatan'));
+    }
+
+    /**
+     * Mengelompokkan jabatan berdasarkan kode induk
+     * Contoh: "1" adalah parent dari "1.1", "1.2" dst
+     */
+    private function groupByParentCode($jabatan)
+    {
+        $grouped = [];
+        
+        foreach ($jabatan as $item) {
+            $parentCode = $this->getParentCode($item->kode);
+            
+            if (!isset($grouped[$parentCode])) {
+                $grouped[$parentCode] = [];
+            }
+            
+            $grouped[$parentCode][] = $item;
+        }
+        
+        return $grouped;
+    }
+
+    /**
+     * Ekstrak kode induk dari kode jabatan
+     * "1.1.1" -> "1.1", "1.1" -> "1", "1" -> null
+     */
+    private function getParentCode($code)
+    {
+        if (strpos($code, '.') === false) {
+            return null; // Tidak ada parent
+        }
+        
+        $parts = explode('.', $code);
+        array_pop($parts);
+        return implode('.', $parts);
     }
 
     public function create(): View

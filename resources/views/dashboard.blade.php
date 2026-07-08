@@ -22,7 +22,7 @@
     </div>
     <div class="col-md-3">
         <div class="kpi-card">
-            <h3><i class="fas fa-sitemap"></i> Total UNOR</h3>
+            <h3><i class="fas fa-sitemap"></i> Total Unit Organisasi</h3>
             <div class="value">{{ $totalUnor }}</div>
         </div>
     </div>
