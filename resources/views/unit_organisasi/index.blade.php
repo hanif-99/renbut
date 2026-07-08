@@ -495,7 +495,7 @@ async function toggleOPD(headerElement) {
     }
 
     if (detailsElement.dataset.loaded === '0') {
-      detailsElement.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="font-size: 20px; color: #0b58a6;"></i> <p style="margin-top: 8px; color: #666;">Memuat unit...</p></div>';
+      detailsElement.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="font-size: 26px; color: #0b58a6;"></i></div>';
       detailsElement.classList.add('open');
       detailsElement.style.display = 'block';
       try {
