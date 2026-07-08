@@ -7,7 +7,7 @@
 <style>
   /* ===== CONTAINER & LAYOUT ===== */
   .search-container { 
-    margin-bottom: 24px; 
+    margin-bottom: 12px; /* reduce vertical gap */
     display: flex; 
     gap: 10px; 
     align-items: center; 
@@ -16,13 +16,14 @@
   }
 
   .search-box { 
-    flex: 0 1 360px; 
+    flex: 0 1 240px; /* make search shorter */
+    max-width: 260px;
     position: relative; 
   }
 
   .search-box input { 
     width: 100%; 
-    padding: 10px 35px 10px 14px; 
+    padding: 8px 30px 8px 12px; /* reduce padding */
     border: 1px solid #ddd; 
     border-radius: 6px; 
     font-size: 14px; 
@@ -38,14 +39,14 @@
 
   .search-clear-btn { 
     position: absolute; 
-    right: 10px; 
+    right: 8px; 
     top: 50%; 
     transform: translateY(-50%); 
     background: none; 
     border: none; 
     color: #bbb; 
     cursor: pointer; 
-    font-size: 16px; 
+    font-size: 14px; 
     padding: 0; 
     display: none;
     transition: color 0.2s ease; 
@@ -59,38 +60,38 @@
     display: block; 
   }
 
-  /* ===== OPD HEADER (Perangkat Daerah) - MINIMALIS ===== */
+  /* ===== OPD HEADER (Perangkat Daerah) - COMPACT ===== */
   .opd-header { 
     background: #f8f9fa;
     border-left: none;
     color: #2c3e50; 
     font-weight: 400;
-    padding: 14px 16px; 
-    margin-top: 12px; 
+    padding: 10px 12px; /* smaller padding */
+    margin-top: 8px; /* smaller gap between items */
     cursor: pointer; 
     display: flex; 
     justify-content: space-between; 
     align-items: center;
     border-radius: 6px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    transition: all 0.2s ease;
+    transition: all 0.12s ease;
   }
 
   .opd-header:hover {
     background: #f0f2f5;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
 
   .opd-header-title { 
     display: flex; 
     align-items: center; 
-    gap: 12px; 
+    gap: 8px; /* reduce gap */
     font-size: 14px; 
     flex: 1;
   }
 
   .opd-header i:first-child {
-    font-size: 16px;
+    font-size: 14px;
     color: #0b58a6;
     flex-shrink: 0;
   }
@@ -98,17 +99,21 @@
   .opd-name { 
     font-weight: 400; 
     color: #2c3e50; 
-    font-size: 14px;
+    font-size: 13px; /* slightly smaller to fit */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 120px); /* keep space for badge */
   }
 
   .unit-count-badge { 
     background: #e3f2fd;
     color: #0b58a6; 
-    padding: 4px 12px; 
-    border-radius: 16px; 
+    padding: 4px 8px; /* smaller badge */
+    border-radius: 12px; 
     font-size: 11px; 
     font-weight: 400;
-    margin-left: 8px;
+    margin-left: 6px;
     flex-shrink: 0;
   }
 
@@ -116,13 +121,13 @@
     display: inline-flex; 
     align-items: center; 
     justify-content: center; 
-    width: 20px; 
-    height: 20px; 
+    width: 18px; 
+    height: 18px; 
     color: #0b58a6; 
     font-size: 10px; 
     transform: rotate(-90deg);
     flex-shrink: 0;
-    transition: transform 0.2s ease;
+    transition: transform 0.12s ease;
     margin-right: 4px;
   }
 
@@ -135,7 +140,7 @@
     display: none; 
     padding: 0; 
     background-color: #fff; 
-    margin-bottom: 8px; 
+    margin-bottom: 6px; 
     border-radius: 0 0 6px 6px; 
     border: 1px solid #e8eaed;
     border-top: none;
@@ -147,7 +152,7 @@
     display: block; 
   }
 
-  /* ===== UNIT LIST ===== */
+  /* ===== UNIT LIST (COMPACT) ===== */
   .unit-list {
     display: flex;
     flex-direction: column;
@@ -155,10 +160,10 @@
 
   .unit-row { 
     display: grid; 
-    grid-template-columns: 45px 90px 1fr 150px auto; 
-    gap: 14px; 
+    grid-template-columns: 90px 1fr 130px auto; /* compact columns */
+    gap: 12px; 
     align-items: center; 
-    padding: 12px 16px; 
+    padding: 8px 12px; /* reduced padding */
     border-bottom: 1px solid #f0f0f0;
     font-size: 13px;
   }
@@ -169,46 +174,31 @@
 
   /* ===== LEVEL STYLING (Indentation) ===== */
   .unit-row[data-level="1"] { 
-    padding-left: 16px; 
+    padding-left: 12px; 
     background-color: #fafbfc;
     font-weight: 400;
   }
 
   .unit-row[data-level="2"] { 
-    padding-left: 36px; 
+    padding-left: 28px; 
     background-color: #f8f9fb; 
   }
 
   .unit-row[data-level="3"] { 
-    padding-left: 56px; 
+    padding-left: 44px; 
     background-color: #ffffff; 
-  }
-
-  /* ===== UNIT NUMBER ===== */
-  .unit-no { 
-    font-weight: 400; 
-    color: #0b58a6; 
-    text-align: center; 
-    font-size: 12px;
-    min-width: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #e3f2fd;
-    border-radius: 4px;
-    height: 28px;
   }
 
   /* ===== UNIT CODE (KODE) ===== */
   .unit-kode { 
-    background: #e3f2fd;
+    background: #eaf6ff; /* lighter for compact */
     color: #0b58a6; 
-    padding: 6px 10px; 
+    padding: 5px 8px; 
     border-radius: 4px; 
     font-weight: 400; 
     font-size: 12px; 
     text-align: center;
-    min-width: 90px;
+    min-width: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -219,25 +209,17 @@
   .unit-info { 
     display: flex; 
     flex-direction: column; 
-    gap: 3px;
+    gap: 2px;
   }
 
   .unit-nama { 
     font-weight: 400; 
     color: #2c3e50; 
     font-size: 13px;
-    line-height: 1.4;
-  }
-
-  .unit-atasan { 
-    color: #7f8c8d; 
-    font-size: 12px;
-    line-height: 1.3;
-  }
-
-  .unit-atasan-empty {
-    color: #bdc3c7;
-    font-style: italic;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* ===== UNIT ACTIONS ===== */
@@ -250,16 +232,16 @@
   .btn-action {
     border: none;
     cursor: pointer;
-    padding: 6px 12px;
+    padding: 6px 10px;
     font-size: 12px;
     border-radius: 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 6px;
     text-decoration: none;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.12s ease;
   }
 
   .btn-edit {
@@ -269,7 +251,7 @@
 
   .btn-edit:hover {
     background-color: #ffb300;
-    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
   }
 
   .btn-delete {
@@ -279,20 +261,20 @@
 
   .btn-delete:hover {
     background-color: #c82333;
-    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
   }
 
   /* ===== SEARCH RESULTS ===== */
   .pd-group { 
-    margin-bottom: 16px; 
+    margin-bottom: 12px; 
   }
 
   .pd-group .pd-header { 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    gap: 10px; 
-    padding: 12px 14px; 
+    gap: 8px; 
+    padding: 10px 12px; 
     background: #f8f9fa;
     border: 1px solid #e8eaed; 
     border-radius: 6px;
@@ -302,7 +284,7 @@
   .pd-group .pd-header strong {
     color: #2c3e50;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .pd-results { 
@@ -314,21 +296,21 @@
   }
 
   .pd-results .unit-row { 
-    grid-template-columns: 40px 80px 1fr 120px auto; 
+    grid-template-columns: 80px 1fr 120px auto; 
   }
 
   .show-more-btn { 
     display: inline-block; 
-    margin-top: 12px; 
+    margin-top: 8px; 
     background: #eef6ff;
     color: #0b58a6; 
     border: 1px solid #cfe4ff;
-    padding: 8px 14px; 
+    padding: 8px 12px; 
     border-radius: 6px; 
     cursor: pointer; 
     font-size: 13px;
     font-weight: 400;
-    transition: all 0.2s ease;
+    transition: all 0.12s ease;
   }
 
   .show-more-btn:hover {
@@ -339,38 +321,19 @@
   /* ===== NO DATA MESSAGE ===== */
   .no-data-message {
     text-align: center;
-    padding: 40px 20px;
+    padding: 28px 12px; /* smaller */
     color: #7f8c8d;
   }
 
   .no-data-message i {
-    font-size: 32px;
-    margin-bottom: 12px;
+    font-size: 28px;
+    margin-bottom: 8px;
     display: block;
     color: #bdc3c7;
   }
 
   .no-data-message p {
     font-size: 13px;
-    margin: 0;
-  }
-
-  /* ===== NO RESULTS ===== */
-  .no-results {
-    text-align: center;
-    padding: 60px 20px;
-    color: #7f8c8d;
-  }
-
-  .no-results i {
-    font-size: 40px;
-    margin-bottom: 16px;
-    display: block;
-    color: #bdc3c7;
-  }
-
-  .no-results p {
-    font-size: 14px;
     margin: 0;
   }
 
@@ -532,7 +495,7 @@ async function toggleOPD(headerElement) {
     }
 
     if (detailsElement.dataset.loaded === '0') {
-      detailsElement.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="font-size: 20px; color: #0b58a6;"></i> <p style="margin-top: 8px; color: #666;">Loading...</p></div>';
+      detailsElement.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="font-size: 20px; color: #0b58a6;"></i> <p style="margin-top: 8px; color: #666;">Memuat unit...</p></div>';
       detailsElement.classList.add('open');
       detailsElement.style.display = 'block';
       try {
@@ -589,14 +552,11 @@ function renderUnitsIntoDetails(detailsElement, json) {
   let html = '<div class="unit-list">';
   units.forEach((u, idx) => {
     const level = u._level || 1;
-    const no = idx + 1;
     html += `
       <div class="unit-row" data-level="${level}">
-        <div class="unit-no">${no}</div>
         <div class="unit-kode">${escapeHtml(u.kode)}</div>
         <div class="unit-info">
           <div class="unit-nama">${escapeHtml(u.nama)}</div>
-          <div class="unit-atasan">${u.unor_atasan ? 'Atasan: ' + escapeHtml(u.unor_atasan) : '<span class="unit-atasan-empty">-</span>'}</div>
         </div>
         <div class="unit-actions">
           <a href="${unitBaseUrl}/${u.id}/edit" class="btn-action btn-edit" title="Edit"><i class="fas fa-edit"></i> Edit</a>
@@ -666,11 +626,9 @@ function renderSearchResults(container, json) {
       const hiddenClass = idx >= SHOW_FIRST ? 'style="display:none;" data-hidden="1"' : '';
       html += `
         <div class="unit-row" data-level="${level}" ${hiddenClass}>
-          <div class="unit-no">${idx + 1}</div>
           <div class="unit-kode">${escapeHtml(u.kode)}</div>
           <div class="unit-info">
             <div class="unit-nama">${escapeHtml(u.nama)}</div>
-            <div class="unit-atasan">${u.unor_atasan ? 'Atasan: ' + escapeHtml(u.unor_atasan) : '<span class="unit-atasan-empty">-</span>'}</div>
           </div>
           <div class="unit-actions">
             <a href="${unitBaseUrl}/${u.id}/edit" class="btn-action btn-edit" title="Edit"><i class="fas fa-edit"></i> Edit</a>
