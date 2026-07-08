@@ -5,8 +5,9 @@
 
 @section('css')
 <style>
+  /* ===== CONTAINER & LAYOUT ===== */
   .search-container { 
-    margin-bottom: 20px; 
+    margin-bottom: 24px; 
     display: flex; 
     gap: 10px; 
     align-items: center; 
@@ -25,6 +26,8 @@
     border: 1px solid #ddd; 
     border-radius: 6px; 
     font-size: 14px; 
+    background-color: #fff;
+    transition: border-color 0.2s ease;
   }
 
   .search-box input:focus { 
@@ -40,28 +43,42 @@
     transform: translateY(-50%); 
     background: none; 
     border: none; 
-    color: #999; 
+    color: #bbb; 
     cursor: pointer; 
-    font-size: 18px; 
+    font-size: 16px; 
     padding: 0; 
-    display: none; 
+    display: none;
+    transition: color 0.2s ease; 
+  }
+
+  .search-clear-btn:hover {
+    color: #999;
   }
 
   .search-box input:not(:placeholder-shown) ~ .search-clear-btn { 
     display: block; 
   }
 
+  /* ===== OPD HEADER (Perangkat Daerah) - MINIMALIS ===== */
   .opd-header { 
-    background-color: #f8f9fa; 
-    border-left: 4px solid #ccc; 
-    color: #333; 
-    font-weight: 600; 
+    background: #f8f9fa;
+    border-left: none;
+    color: #2c3e50; 
+    font-weight: 400;
     padding: 14px 16px; 
     margin-top: 12px; 
     cursor: pointer; 
     display: flex; 
     justify-content: space-between; 
-    align-items: center; 
+    align-items: center;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .opd-header:hover {
+    background: #f0f2f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 
   .opd-header-title { 
@@ -69,20 +86,30 @@
     align-items: center; 
     gap: 12px; 
     font-size: 14px; 
+    flex: 1;
+  }
+
+  .opd-header i:first-child {
+    font-size: 16px;
+    color: #0b58a6;
+    flex-shrink: 0;
   }
 
   .opd-name { 
-    font-weight: 600; 
-    color: #0b2545; 
+    font-weight: 400; 
+    color: #2c3e50; 
+    font-size: 14px;
   }
 
   .unit-count-badge { 
-    background: #e3f2fd; 
+    background: #e3f2fd;
     color: #0b58a6; 
     padding: 4px 12px; 
-    border-radius: 20px; 
-    font-size: 12px; 
-    font-weight: 400; 
+    border-radius: 16px; 
+    font-size: 11px; 
+    font-weight: 400;
+    margin-left: 8px;
+    flex-shrink: 0;
   }
 
   .toggle-icon { 
@@ -92,88 +119,147 @@
     width: 20px; 
     height: 20px; 
     color: #0b58a6; 
-    font-size: 12px; 
-    transform: rotate(-90deg); 
+    font-size: 10px; 
+    transform: rotate(-90deg);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    margin-right: 4px;
   }
 
   .opd-header.open .toggle-icon { 
     transform: rotate(0deg); 
   }
 
+  /* ===== UNIT DETAILS CONTAINER ===== */
   .unit-details { 
     display: none; 
-    padding: 12px 16px 16px 16px; 
-    background-color: #fafafa; 
-    margin-bottom: 10px; 
+    padding: 0; 
+    background-color: #fff; 
+    margin-bottom: 8px; 
     border-radius: 0 0 6px 6px; 
-    border: 1px solid #e0e0e0; 
-    border-top: none; 
+    border: 1px solid #e8eaed;
+    border-top: none;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  .unit-details.open { 
+    display: block; 
+  }
+
+  /* ===== UNIT LIST ===== */
+  .unit-list {
+    display: flex;
+    flex-direction: column;
   }
 
   .unit-row { 
     display: grid; 
-    grid-template-columns: 40px 85px 1fr 140px auto; 
-    gap: 12px; 
+    grid-template-columns: 45px 90px 1fr 150px auto; 
+    gap: 14px; 
     align-items: center; 
-    padding: 10px 0; 
-    border-bottom: 1px solid #e8e8e8; 
+    padding: 12px 16px; 
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
   }
 
+  .unit-row:last-child {
+    border-bottom: none;
+  }
+
+  /* ===== LEVEL STYLING (Indentation) ===== */
+  .unit-row[data-level="1"] { 
+    padding-left: 16px; 
+    background-color: #fafbfc;
+    font-weight: 400;
+  }
+
+  .unit-row[data-level="2"] { 
+    padding-left: 36px; 
+    background-color: #f8f9fb; 
+  }
+
+  .unit-row[data-level="3"] { 
+    padding-left: 56px; 
+    background-color: #ffffff; 
+  }
+
+  /* ===== UNIT NUMBER ===== */
   .unit-no { 
     font-weight: 400; 
     color: #0b58a6; 
     text-align: center; 
-    font-size: 13px; 
+    font-size: 12px;
+    min-width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e3f2fd;
+    border-radius: 4px;
+    height: 28px;
   }
 
+  /* ===== UNIT CODE (KODE) ===== */
   .unit-kode { 
-    background: #e3f2fd; 
+    background: #e3f2fd;
     color: #0b58a6; 
-    padding: 4px 8px; 
+    padding: 6px 10px; 
     border-radius: 4px; 
     font-weight: 400; 
     font-size: 12px; 
-    text-align: center; 
+    text-align: center;
+    min-width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
   }
 
+  /* ===== UNIT INFO ===== */
   .unit-info { 
     display: flex; 
     flex-direction: column; 
-    gap: 3px; 
+    gap: 3px;
   }
 
   .unit-nama { 
     font-weight: 400; 
-    color: #333; 
-    font-size: 14px; 
+    color: #2c3e50; 
+    font-size: 13px;
+    line-height: 1.4;
   }
 
   .unit-atasan { 
-    color: #666; 
-    font-size: 12px; 
+    color: #7f8c8d; 
+    font-size: 12px;
+    line-height: 1.3;
   }
 
   .unit-atasan-empty {
-    color: #999;
+    color: #bdc3c7;
+    font-style: italic;
   }
 
+  /* ===== UNIT ACTIONS ===== */
   .unit-actions { 
     display: flex; 
-    gap: 6px; 
-    justify-content: flex-end; 
+    gap: 8px; 
+    justify-content: flex-end;
   }
 
   .btn-action {
     border: none;
     cursor: pointer;
-    padding: 6px 10px;
-    font-size: 13px;
+    padding: 6px 12px;
+    font-size: 12px;
     border-radius: 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 5px;
     text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
   }
 
   .btn-edit {
@@ -181,17 +267,24 @@
     color: #000;
   }
 
+  .btn-edit:hover {
+    background-color: #ffb300;
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+  }
+
   .btn-delete {
     background-color: #dc3545;
     color: #fff;
   }
 
-  .search-results .unit-list { 
-    display: block; 
+  .btn-delete:hover {
+    background-color: #c82333;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
   }
 
+  /* ===== SEARCH RESULTS ===== */
   .pd-group { 
-    margin-bottom: 12px; 
+    margin-bottom: 16px; 
   }
 
   .pd-group .pd-header { 
@@ -199,49 +292,144 @@
     justify-content: space-between; 
     align-items: center; 
     gap: 10px; 
-    padding: 8px 12px; 
-    background: #fff; 
-    border: 1px solid #e8e8e8; 
-    border-radius: 6px; 
+    padding: 12px 14px; 
+    background: #f8f9fa;
+    border: 1px solid #e8eaed; 
+    border-radius: 6px;
+    border-bottom: none;
+  }
+
+  .pd-group .pd-header strong {
+    color: #2c3e50;
+    font-weight: 400;
+    font-size: 14px;
   }
 
   .pd-results { 
-    margin-top: 8px; 
+    margin-top: 0; 
     background: #fff; 
-    border: 1px solid #eaeaea; 
-    border-radius: 6px; 
-    padding: 8px; 
-    max-height: 420px; 
+    border: 1px solid #e8eaed; 
+    border-radius: 0 0 6px 6px; 
     overflow: auto; 
   }
 
   .pd-results .unit-row { 
-    grid-template-columns: 40px 85px 1fr 110px auto; 
+    grid-template-columns: 40px 80px 1fr 120px auto; 
   }
 
   .show-more-btn { 
     display: inline-block; 
-    margin-top: 8px; 
-    background: #eef6ff; 
+    margin-top: 12px; 
+    background: #eef6ff;
     color: #0b58a6; 
-    border: 1px solid #d6ecff; 
-    padding: 6px 10px; 
+    border: 1px solid #cfe4ff;
+    padding: 8px 14px; 
     border-radius: 6px; 
     cursor: pointer; 
-    font-size: 13px; 
+    font-size: 13px;
+    font-weight: 400;
+    transition: all 0.2s ease;
   }
 
+  .show-more-btn:hover {
+    background: #dce8ff;
+    border-color: #b3d4ff;
+  }
+
+  /* ===== NO DATA MESSAGE ===== */
+  .no-data-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #7f8c8d;
+  }
+
+  .no-data-message i {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+    color: #bdc3c7;
+  }
+
+  .no-data-message p {
+    font-size: 13px;
+    margin: 0;
+  }
+
+  /* ===== NO RESULTS ===== */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #7f8c8d;
+  }
+
+  .no-results i {
+    font-size: 40px;
+    margin-bottom: 16px;
+    display: block;
+    color: #bdc3c7;
+  }
+
+  .no-results p {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* ===== CARD HEADER ===== */
+  .card-header {
+    background: linear-gradient(135deg, #0b2545 0%, #0b58a6 100%);
+  }
+
+  .card-header h5 {
+    color: #fff;
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  .card-header i {
+    margin-right: 8px;
+  }
+
+  /* ===== RESPONSIVE ===== */
   @media (max-width: 768px) { 
     .search-container { 
       justify-content: flex-start; 
       flex-direction: column; 
-    } 
+    }
+
+    .opd-header-title {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .unit-count-badge {
+      margin-left: 0;
+      margin-top: 4px;
+    }
+
     .unit-row { 
       grid-template-columns: 1fr; 
       gap: 8px; 
     } 
+
+    .unit-row[data-level="1"] { 
+      padding-left: 12px; 
+    }
+
+    .unit-row[data-level="2"] { 
+      padding-left: 28px; 
+    }
+
+    .unit-row[data-level="3"] { 
+      padding-left: 44px; 
+    }
+
     .unit-actions { 
-      justify-content: flex-start; 
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .pd-results .unit-row { 
+      grid-template-columns: 1fr; 
     }
   }
 </style>
@@ -253,7 +441,7 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fas fa-sitemap"></i> Master Unit Organisasi</h5>
-        <a href="{{ route('unit_organisasi.create') }}" class="btn btn-sm btn-primary">
+        <a href="{{ route('unit_organisasi.create') }}" class="btn btn-sm btn-light">
           <i class="fas fa-plus"></i> Tambah UNOR
         </a>
       </div>
@@ -262,8 +450,8 @@
         @if($perangkatDaerah->count() > 0)
           <div class="search-container">
             <div class="search-box">
-              <input type="text" id="searchInput" placeholder="Search . . ." autocomplete="off" />
-              <button class="search-clear-btn" onclick="clearSearch()" title="Clear">
+              <input type="text" id="searchInput" placeholder="Cari unit organisasi..." autocomplete="off" />
+              <button class="search-clear-btn" onclick="clearSearch()" title="Hapus pencarian">
                 <i class="fas fa-times"></i>
               </button>
             </div>
@@ -271,7 +459,7 @@
 
           <div id="opdContainer">
             @foreach($perangkatDaerah as $opd)
-              <div class="opd-header collapsed" data-opd-id="{{ $opd->id }}" data-search-text="{{ strtolower($opd->nama) }}">
+              <div class="opd-header collapsed" data-opd-id="{{ $opd->id }}" data-has-units="{{ $opd->unit_organisasi_count > 0 ? 'true' : 'false' }}">
                 <div class="opd-header-title">
                   <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
                   <i class="fas fa-building"></i>
@@ -280,7 +468,7 @@
                 </div>
               </div>
 
-              <div class="unit-details" id="details-{{ $opd->id }}" data-loaded="0" data-current-page="0"></div>
+              <div class="unit-details" id="details-{{ $opd->id }}" data-loaded="0"></div>
             @endforeach
           </div>
         @else
@@ -328,36 +516,47 @@ document.addEventListener('DOMContentLoaded', () => {
 async function toggleOPD(headerElement) {
   if (!headerElement) return;
   const opdId = headerElement.getAttribute('data-opd-id');
+  const hasUnits = headerElement.getAttribute('data-has-units') === 'true';
   const detailsElement = document.getElementById('details-' + opdId);
   if (!detailsElement) return;
 
   const isOpen = headerElement.classList.contains('open');
 
   if (!isOpen) {
+    if (!hasUnits) {
+      detailsElement.innerHTML = '<div class="no-data-message"><i class="fas fa-inbox"></i><p>Belum ada Unit Organisasi</p></div>';
+      detailsElement.classList.add('open');
+      headerElement.classList.add('open');
+      detailsElement.style.display = 'block';
+      return;
+    }
+
     if (detailsElement.dataset.loaded === '0') {
-      detailsElement.innerHTML = '<p>Loading…</p>';
+      detailsElement.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="font-size: 20px; color: #0b58a6;"></i> <p style="margin-top: 8px; color: #666;">Loading...</p></div>';
+      detailsElement.classList.add('open');
       detailsElement.style.display = 'block';
       try {
-        await loadUnits(opdId, 1);
+        await loadUnits(opdId);
       } catch (e) {
         console.error(e);
       }
     }
     headerElement.classList.add('open');
+    detailsElement.classList.add('open');
     detailsElement.style.display = 'block';
   } else {
     headerElement.classList.remove('open');
+    detailsElement.classList.remove('open');
     detailsElement.style.display = 'none';
   }
 }
 
-async function loadUnits(opdId, page = 1) {
+async function loadUnits(opdId) {
   const detailsElement = document.getElementById('details-' + opdId);
   if (!detailsElement) return;
-  detailsElement.innerHTML = '<p>Loading…</p>';
+  
   try {
-    const perPage = 50;
-    const url = `${unitsBaseUrl}/${opdId}/units?per_page=${perPage}&page=${page}`;
+    const url = `${unitsBaseUrl}/${opdId}/units?per_page=999&page=1`;
     const res = await fetch(url, { 
       headers: { 'Accept': 'application/json' }, 
       credentials: 'same-origin' 
@@ -365,38 +564,34 @@ async function loadUnits(opdId, page = 1) {
     if (!res.ok) {
       const txt = await res.text();
       console.error('loadUnits failed', res.status, txt);
-      detailsElement.innerHTML = `<p class="text-danger">Gagal memuat data (HTTP ${res.status}).</p>`;
+      detailsElement.innerHTML = `<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat data (HTTP ${res.status})</p></div>`;
       detailsElement.dataset.loaded = '0';
       return;
     }
     const json = await res.json();
-    renderUnitsIntoDetails(detailsElement, json, opdId);
+    renderUnitsIntoDetails(detailsElement, json);
   } catch (e) {
     console.error('Error loadUnits:', e);
-    detailsElement.innerHTML = '<p class="text-danger">Gagal memuat data (cek console).</p>';
+    detailsElement.innerHTML = '<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat data</p></div>';
     detailsElement.dataset.loaded = '0';
   }
 }
 
-function renderUnitsIntoDetails(detailsElement, json, opdId) {
+function renderUnitsIntoDetails(detailsElement, json) {
   const units = json.data || [];
-  const perPage = json.per_page || 50;
-  const currentPage = json.current_page || 1;
-  const lastPage = json.last_page || 1;
 
   if (units.length === 0) {
     detailsElement.innerHTML = '<div class="no-data-message"><i class="fas fa-inbox"></i><p>Belum ada Unit Organisasi</p></div>';
     detailsElement.dataset.loaded = '1';
-    detailsElement.dataset.currentPage = '0';
-    detailsElement.style.display = 'block';
     return;
   }
 
   let html = '<div class="unit-list">';
   units.forEach((u, idx) => {
-    const no = ((currentPage - 1) * perPage) + (idx + 1);
+    const level = u._level || 1;
+    const no = idx + 1;
     html += `
-      <div class="unit-row" data-search-text="${(u.nama + ' ' + u.kode).toLowerCase()}" data-opd-id="${u.perangkat_daerah_id}">
+      <div class="unit-row" data-level="${level}">
         <div class="unit-no">${no}</div>
         <div class="unit-kode">${escapeHtml(u.kode)}</div>
         <div class="unit-info">
@@ -412,26 +607,14 @@ function renderUnitsIntoDetails(detailsElement, json, opdId) {
   });
   html += '</div>';
 
-  html += `<div class="mt-3 d-flex justify-content-center align-items-center gap-2">`;
-  if (currentPage > 1) {
-    html += `<button class="btn btn-outline-secondary btn-sm" onclick="loadUnits(${opdId}, ${currentPage - 1})">Prev</button>`;
-  }
-  html += `<span>Halaman ${currentPage} / ${lastPage}</span>`;
-  if (currentPage < lastPage) {
-    html += `<button class="btn btn-outline-secondary btn-sm" onclick="loadUnits(${opdId}, ${currentPage + 1})">Next</button>`;
-  }
-  html += `</div>`;
-
   detailsElement.innerHTML = html;
   detailsElement.dataset.loaded = '1';
-  detailsElement.dataset.currentPage = currentPage.toString();
-  detailsElement.style.display = 'block';
 }
 
 async function serverSearch(query) {
   const container = document.getElementById('opdContainer');
   if (!container) return;
-  container.innerHTML = '<p>Searching…</p>';
+  container.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0b58a6;"></i> <p style="margin-top: 12px; color: #666;">Mencari...</p></div>';
 
   try {
     const perPage = 500;
@@ -443,21 +626,21 @@ async function serverSearch(query) {
     if (!res.ok) {
       const txt = await res.text();
       console.error('Search failed', res.status, txt);
-      container.innerHTML = `<p class="text-danger">Gagal melakukan pencarian (HTTP ${res.status}).</p>`;
+      container.innerHTML = `<div class="no-results"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>`;
       return;
     }
     const json = await res.json();
     renderSearchResults(container, json);
   } catch (e) {
     console.error('Error serverSearch:', e);
-    container.innerHTML = '<p class="text-danger">Gagal melakukan pencarian (cek console).</p>';
+    container.innerHTML = '<div class="no-results"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>';
   }
 }
 
 function renderSearchResults(container, json) {
   const units = json.data || [];
   if (units.length === 0) {
-    container.innerHTML = '<div id="noResults" class="no-results"><i class="fas fa-search"></i><p>Tidak ada hasil yang cocok</p></div>';
+    container.innerHTML = '<div class="no-results"><i class="fas fa-search"></i><p>Tidak ada hasil yang sesuai</p></div>';
     return;
   }
 
@@ -473,15 +656,16 @@ function renderSearchResults(container, json) {
     const arr = grouped[pdName];
     html += `<div class="pd-group">
               <div class="pd-header">
-                <div><i class="fas fa-building"></i> <strong>${escapeHtml(pdName)}</strong></div>
+                <div><i class="fas fa-building" style="color: #0b58a6; margin-right: 8px;"></i><strong>${escapeHtml(pdName)}</strong></div>
                 <div><span class="unit-count-badge">${arr.length} Unit</span></div>
               </div>`;
 
-    html += `<div class="pd-results" data-pd="${escapeHtml(pdName)}">`;
+    html += `<div class="pd-results">`;
     arr.forEach((u, idx) => {
+      const level = u._level || 1;
       const hiddenClass = idx >= SHOW_FIRST ? 'style="display:none;" data-hidden="1"' : '';
       html += `
-        <div class="unit-row" ${hiddenClass}>
+        <div class="unit-row" data-level="${level}" ${hiddenClass}>
           <div class="unit-no">${idx + 1}</div>
           <div class="unit-kode">${escapeHtml(u.kode)}</div>
           <div class="unit-info">
@@ -497,7 +681,7 @@ function renderSearchResults(container, json) {
     });
 
     if (arr.length > SHOW_FIRST) {
-      html += `<div style="text-align:center;"><button class="show-more-btn" onclick="expandPdResults(this, ${SHOW_FIRST})">Tampilkan semua (${arr.length})</button></div>`;
+      html += `<div style="text-align: center; padding: 12px;"><button class="show-more-btn" onclick="expandPdResults(this, ${SHOW_FIRST})"><i class="fas fa-chevron-down"></i> Tampilkan semua (${arr.length})</button></div>`;
     }
 
     html += `</div></div>`;
@@ -517,7 +701,7 @@ function expandPdResults(btn, limit) {
 }
 
 async function deleteUnit(id, opdId) {
-  if (!confirm('Yakin hapus unit ini?')) return;
+  if (!confirm('Yakin ingin menghapus unit organisasi ini?')) return;
   try {
     const res = await fetch(`${unitBaseUrl}/${id}`, {
       method: 'DELETE',
@@ -527,22 +711,21 @@ async function deleteUnit(id, opdId) {
     if (!res.ok) {
       const txt = await res.text();
       console.error('Delete failed', res.status, txt);
-      alert('Gagal menghapus unit (HTTP ' + res.status + ').');
+      alert('Gagal menghapus unit organisasi.');
       return;
     }
     const json = await res.json();
     if (json.success) {
       const detailsElement = document.getElementById('details-' + opdId);
       if (detailsElement && detailsElement.dataset.loaded === '1' && detailsElement.style.display !== 'none') {
-        const currentPage = parseInt(detailsElement.dataset.currentPage || '1', 10);
-        loadUnits(opdId, currentPage);
+        loadUnits(opdId);
       }
     } else {
-      alert(json.message || 'Gagal menghapus unit.');
+      alert(json.message || 'Gagal menghapus unit organisasi.');
     }
   } catch (e) {
     console.error('Error deleteUnit:', e);
-    alert('Terjadi kesalahan saat menghapus (cek console).');
+    alert('Terjadi kesalahan saat menghapus.');
   }
 }
 
@@ -556,6 +739,7 @@ function clearSearch() {
     h.classList.remove('open');
   });
   document.querySelectorAll('.unit-details').forEach(d => {
+    d.classList.remove('open');
     d.style.display = 'none';
   });
 }
