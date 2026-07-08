@@ -1,23 +1,22 @@
-{{-- resources/views/perangkat_daerah/index.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Master Perangkat Daerah')
 
 @section('css')
 <style>
-  /* CSS variables for easy tuning */
-  :root{
-    --header-padding-vertical: 5px;   /* controls banner (card-header) vertical padding / visual height */
-    --row-padding-vertical: 8px;       /* controls vertical padding inside each row */
-    --row-padding-horizontal: 16px;    /* controls horizontal padding inside each row */
-    --row-gap: 12px;                   /* grid gap between columns inside a row */
-    --number-width: 45px;              /* width/min-width of number column */
-    --number-height: 28px;             /* height of number bubble */
+  /* Tweakable variables */
+  :root {
+    --header-padding-vertical: 5px;   /* height/vertical padding of the blue banner */
+    --row-padding-vertical: 8px;     /* vertical padding inside each row */
+    --row-padding-horizontal: 16px;   /* horizontal padding inside each row */
+    --row-gap: 14px;                  /* grid gap between columns */
+    --number-width: 45px;             /* width of number badge column */
+    --number-height: 28px;            /* height of number badge */
   }
 
   /* ===== CONTAINER & LAYOUT ===== */
   .search-container {
-    margin-bottom: 11px;
+    margin-bottom: 10px;
     display: flex;
     gap: 10px;
     align-items: center;
@@ -26,13 +25,14 @@
   }
 
   .search-box {
-    flex: 0 1 240px;
+    flex: 0 1 200px;
+    max-width: 260px;
     position: relative;
   }
 
   .search-box input {
     width: 100%;
-    padding: 5px 35px 10px 14px;
+    padding: 8px 30px 8px 12px;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 14px;
@@ -64,10 +64,7 @@
   .search-clear-btn:hover { color: #999; }
   .search-box input:not(:placeholder-shown) ~ .search-clear-btn { display: block; }
 
-  /* ===== CARD HEADER / BANNER =====
-     Adjust banner height:
-     - Change --header-padding-vertical to increase/decrease banner vertical size.
-  */
+  /* ===== CARD HEADER / BANNER (match unit_organisasi) ===== */
   .card-header {
     background: linear-gradient(135deg, #0b2545 0%, #0b58a6 100%);
     padding: var(--header-padding-vertical) 16px;
@@ -79,26 +76,15 @@
     margin: 0;
   }
 
-  /* keep a right-side placeholder to match unit_organisasi header layout */
-  .header-placeholder {
-    width: 140px;
-    height: 36px; /* matches typical button height */
-  }
+  /* placeholder right area (keeps header layout same as unit_organisasi) */
+  .header-placeholder { width: 140px; height: 36px; }
 
-  /* ===== ROW LIST (make spacing like Unit Organisasi but compacted) =====
-     Adjust spacing:
-     - Change --row-padding-vertical to increase/decrease vertical padding of each row.
-     - Change --row-gap to change gap between columns.
-  */
-  .unit-list {
-    display: flex;
-    flex-direction: column;
-  }
+  /* ===== UNIT ROW (identical to unit_organisasi) ===== */
+  .unit-list { display: flex; flex-direction: column; }
 
   .unit-row {
     display: grid;
-    /* columns: number | name | actions */
-    grid-template-columns: var(--number-width) 1fr 150px;
+    grid-template-columns: var(--number-width) 90px 1fr 150px auto;
     gap: var(--row-gap);
     align-items: center;
     padding: var(--row-padding-vertical) var(--row-padding-horizontal);
@@ -109,36 +95,45 @@
 
   .unit-row:last-child { border-bottom: none; }
 
-  /* indentation levels kept but default level=1 */
-  .unit-row[data-level="1"] { background-color: #fafbfc; }
-  .unit-row[data-level="2"] { background-color: #f8f9fb; padding-left: calc(var(--row-padding-horizontal) + 20px); }
-  .unit-row[data-level="3"] { background-color: #ffffff; padding-left: calc(var(--row-padding-horizontal) + 40px); }
+  .unit-row[data-level="1"] { padding-left: 16px; background-color: #fafbfc; font-weight: 400; }
+  .unit-row[data-level="2"] { padding-left: 36px; background-color: #f8f9fb; }
+  .unit-row[data-level="3"] { padding-left: 56px; background-color: #ffffff; }
 
-  /* ===== number column (left) =====
-     - Controls numeric bubble look; adjust --number-width and --number-height
-  */
-  .unit-number {
+  /* ===== NUMBER BADGE (left) - make it like unit_organisasi .unit-no ===== */
+  .unit-no {
+    font-weight: 400;
+    color: #0b58a6;
+    text-align: center;
+    font-size: 12px;
+    min-width: var(--number-width);
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: var(--number-width);
-    width: var(--number-width);
-    height: var(--number-height);
-    background: #eaf6ff;  /* subtle bubble similar to unit_organisasi color */
-    color: #0b58a6;
+    background: #eaf6ff;
     border-radius: 6px;
+    height: var(--number-height);
+  }
+
+  /* ===== unit-kode kept to match structure (second column) but we leave it blank for PD */
+  .unit-kode {
+    background: #e3f2fd;
+    color: #0b58a6;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-weight: 400;
     font-size: 12px;
-    font-weight: 500;
+    text-align: center;
+    min-width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
   }
 
-  /* ===== name column ===== */
-  .unit-name {
-    color: #2c3e50;
-    font-size: 13px;
-    line-height: 1.4;
-  }
+  .unit-info { display: flex; flex-direction: column; gap: 3px; }
+  .unit-nama { font-weight: 400; color: #2c3e50; font-size: 13px; line-height: 1.4; }
 
-  /* ===== actions (right) ===== */
+  /* ===== UNIT ACTIONS and BUTTONS - copied from unit_organisasi to ensure identical style ===== */
   .unit-actions {
     display: flex;
     gap: 8px;
@@ -153,20 +148,39 @@
     border-radius: 4px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 5px;
+    text-decoration: none;
     font-weight: 500;
+    transition: all 0.2s ease;
   }
 
-  .btn-edit { background-color: #ffc107; color: #000; }
-  .btn-edit:hover { background-color: #ffb300; }
+  .btn-edit {
+    background-color: #ffc107;
+    color: #000;
+  }
 
-  .btn-delete { background-color: #dc3545; color: #fff; }
-  .btn-delete:hover { background-color: #c82333; }
+  .btn-edit:hover {
+    background-color: #ffb300;
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+  }
 
-  /* responsive adjustments */
+  .btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+  }
+
+  .btn-delete:hover {
+    background-color: #c82333;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+  }
+
+  /* ===== Optional small adjustments for exact pixel parity on narrow screens ===== */
   @media (max-width: 768px) {
     .search-container { justify-content: flex-start; flex-direction: column; }
-    .unit-row { grid-template-columns: 45px 1fr auto; gap: 10px; padding: 10px; }
+    .unit-row { grid-template-columns: 45px 80px 1fr 120px auto; gap: 10px; padding: 10px; }
+    .unit-kode { min-width: 80px; height: 26px; }
+    .unit-no { min-width: 40px; height: 26px; }
   }
 </style>
 @endsection
@@ -175,11 +189,8 @@
 <div class="row">
   <div class="col-md-12">
     <div class="card">
-      {{-- header/banner with smaller height controlled by --header-padding-vertical --}}
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fas fa-building"></i> Master Perangkat Daerah</h5>
-
-        {{-- placeholder to keep header layout identical (no visible Add button) --}}
         <div class="header-placeholder" aria-hidden="true"></div>
       </div>
 
@@ -188,26 +199,25 @@
           <div class="search-container">
             <div class="search-box">
               <input type="text" id="searchInput" placeholder="Cari perangkat daerah..." autocomplete="off" />
-              <button class="search-clear-btn" onclick="clearSearch()" title="Hapus pencarian">
-                <i class="fas fa-times"></i>
-              </button>
+              <button class="search-clear-btn" onclick="clearSearch()" title="Hapus pencarian"><i class="fas fa-times"></i></button>
             </div>
           </div>
 
-          <div class="unit-list" id="opdList">
-            @foreach($perangkat as $i => $opd)
+          <div class="unit-list">
+            @foreach($perangkat as $index => $pd)
               <div class="unit-row" data-level="1">
-                <div class="unit-number">{{ $i + 1 }}</div>
-
-                <div class="unit-name">{{ $opd->nama }}</div>
-
+                <div class="unit-no">{{ $index + 1 }}</div>
+                <div class="unit-kode">&nbsp;</div>
+                <div class="unit-info">
+                  <div class="unit-nama">{{ $pd->nama }}</div>
+                </div>
                 <div class="unit-actions">
-                  <a href="{{ route('perangkat_daerah.edit', $opd->id) }}" class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                  <a href="{{ route('perangkat_daerah.edit', $pd->id) }}" class="btn-action btn-edit" title="Edit"><i class="fas fa-edit"></i> Edit</a>
 
-                  <form action="{{ route('perangkat_daerah.destroy', $opd->id) }}" method="POST" style="display:inline;">
+                  <form action="{{ route('perangkat_daerah.destroy', $pd->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus perangkat daerah ini?');">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn-action btn-delete" onclick="return confirm('Yakin ingin menghapus perangkat daerah ini?')"><i class="fas fa-trash"></i> Hapus</button>
+                    <button type="submit" class="btn-action btn-delete" title="Hapus"><i class="fas fa-trash"></i> Hapus</button>
                   </form>
                 </div>
               </div>
@@ -225,25 +235,24 @@
 
 @section('js')
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
     searchInput.addEventListener('input', function(e) {
       const q = e.target.value.trim().toLowerCase();
       document.querySelectorAll('.unit-list .unit-row').forEach(row => {
-        const name = (row.querySelector('.unit-name')?.textContent || '').trim().toLowerCase();
+        const name = (row.querySelector('.unit-nama')?.textContent || '').trim().toLowerCase();
         row.style.display = (!q || name.includes(q)) ? '' : 'none';
       });
     });
-  }
-});
+  });
 
-function clearSearch() {
-  const searchInput = document.getElementById('searchInput');
-  if (!searchInput) return;
-  searchInput.value = '';
-  searchInput.focus();
-  document.querySelectorAll('.unit-list .unit-row').forEach(r => r.style.display = '');
-}
+  function clearSearch() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+    searchInput.value = '';
+    searchInput.focus();
+    document.querySelectorAll('.unit-list .unit-row').forEach(r => r.style.display = '');
+  }
 </script>
 @endsection

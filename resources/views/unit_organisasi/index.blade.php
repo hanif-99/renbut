@@ -7,7 +7,7 @@
 <style>
   /* ===== CONTAINER & LAYOUT ===== */
   .search-container { 
-    margin-bottom: 12px; /* reduce vertical gap */
+    margin-bottom: 10px; /* reduce vertical gap */
     display: flex; 
     gap: 10px; 
     align-items: center; 
@@ -16,7 +16,7 @@
   }
 
   .search-box { 
-    flex: 0 1 240px; /* make search shorter */
+    flex: 0 1 200px; /* make search shorter */
     max-width: 260px;
     position: relative; 
   }
