@@ -43,7 +43,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('perangkat_daerah/{id}/units', [UnitOrganisasiController::class, 'units'])->name('perangkat_daerah.units');
     Route::resource('unit_organisasi', UnitOrganisasiController::class);
 
-    // Jabatan
+    // Jabatan - IMPORTANT: search route BEFORE resource route
+    Route::get('jabatan/search', [JabatanController::class, 'search'])->name('jabatan.search');
     Route::resource('jabatan', JabatanController::class);
 
     // Formasi ASN
