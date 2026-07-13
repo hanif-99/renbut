@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('unit_organisasi', UnitOrganisasiController::class);
 
     // Jabatan - IMPORTANT: search route BEFORE resource route
+    Route::get('perangkat_daerah/{id}/jabatan', [JabatanController::class, 'getJabatanByPerangkat'])->name('jabatan.getByPerangkat');
     Route::get('jabatan/search', [JabatanController::class, 'search'])->name('jabatan.search');
     Route::resource('jabatan', JabatanController::class);
 

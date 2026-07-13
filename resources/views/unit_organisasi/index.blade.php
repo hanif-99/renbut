@@ -1,4 +1,3 @@
-{{-- resources/views/unit_organisasi/index.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Master Unit Organisasi')
@@ -60,7 +59,7 @@
     display: block; 
   }
 
-  /* ===== OPD HEADER (Perangkat Daerah) - COMPACT ===== */
+  /* ===== OPD HEADER ===== */
   .opd-header { 
     background: #f8f9fa;
     border-left: none;
@@ -405,7 +404,7 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fas fa-sitemap"></i> Master Unit Organisasi</h5>
         <a href="{{ route('unit_organisasi.create') }}" class="btn btn-sm btn-light">
-          <i class="fas fa-plus"></i> Tambah UNOR
+          <i class="fas fa-plus"></i> Tambah Data
         </a>
       </div>
 
@@ -414,7 +413,7 @@
           <div class="search-container">
             <div class="search-box">
               <input type="text" id="searchInput" placeholder="Cari unit organisasi..." autocomplete="off" />
-              <button class="search-clear-btn" onclick="clearSearch()" title="Hapus pencarian">
+              <button class="search-clear-btn" onclick="clearSearch()">
                 <i class="fas fa-times"></i>
               </button>
             </div>

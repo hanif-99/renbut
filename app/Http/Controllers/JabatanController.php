@@ -11,123 +11,123 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 class JabatanController extends Controller
 {
-    public function index(Request $request): View
+    private function getCodeLevel($kode)
     {
-        // Simple pagination - hanya load 10 perangkat per halaman
-        $perPage = 10;
-        $page = (int) $request->input('page', 1);
-        
-        // Count total perangkat
-        $totalPerangkat = DB::table('perangkat_daerah')->count();
-        
-        // Fetch perangkat IDs untuk halaman ini (MINIMAL QUERY)
-        $perangkatIds = DB::table('perangkat_daerah')
-            ->orderBy('nama', 'asc')
-            ->skip(($page - 1) * $perPage)
-            ->take($perPage)
-            ->pluck('id', 'nama')
-            ->toArray();
-
-        // Fetch semua data dalam 1-2 queries saja
-        $unitsData = DB::table('unit_organisasi')
-            ->whereIn('perangkat_daerah_id', array_keys($perangkatIds))
-            ->select('id', 'nama', 'perangkat_daerah_id')
-            ->get();
-
-        $unitIds = $unitsData->pluck('id')->toArray();
-
-        $jabatanData = DB::table('jabatan')
-            ->whereIn('unit_organisasi_id', $unitIds)
-            ->select('id', 'kode', 'nama', 'unit_organisasi_id', 'b', 'k')
-            ->orderBy('kode', 'asc')
-            ->get();
-
-        // Group dalam PHP (lebih cepat daripada query)
-        $groupedData = [];
-        
-        foreach ($perangkatIds as $pdNama => $pdId) {
-            $units = $unitsData->where('perangkat_daerah_id', $pdId)
-                ->groupBy('nama') // Group by nama unit (KONSISTEN)
-                ->map(function($unitGroup) use ($jabatanData) {
-                    $unitId = $unitGroup->first()->id;
-                    $jabatan = $jabatanData->where('unit_organisasi_id', $unitId)->values();
-                    return [
-                        'nama' => $unitGroup->first()->nama,
-                        'jabatan' => $jabatan->toArray()
-                    ];
-                })
-                ->filter(fn($u) => count($u['jabatan']) > 0)
-                ->values();
-
-            if ($units->count() > 0) {
-                $groupedData[] = [
-                    'perangkat_nama' => $pdNama,
-                    'units' => $units->toArray()
-                ];
-            }
-        }
-
-        $totalPages = ceil($totalPerangkat / $perPage);
-        if ($page < 1) $page = 1;
-        if ($page > $totalPages && $totalPages > 0) $page = $totalPages;
-
-        return view('jabatan.index', compact(
-            'groupedData',
-            'page',
-            'perPage',
-            'totalPerangkat',
-            'totalPages'
-        ));
+        if (!$kode) return 0;
+        return count(array_filter(explode('.', trim($kode))));
     }
 
     /**
-     * API: Search jabatan dengan cache & limit
+     * Display listing of Perangkat Daerah dengan jabatan count
+     */
+    public function index(): View
+    {
+        $perangkatDaerah = PerangkatDaerah::with(['unitOrganisasi' => function ($query) {
+            $query->orderBy('kode', 'asc');
+        }])->orderBy('nama', 'asc')->get();
+
+        // Hitung jabatan per perangkat
+        foreach ($perangkatDaerah as $pd) {
+            $unitIds = $pd->unitOrganisasi->pluck('id')->toArray();
+            $pd->jabatan_count = Jabatan::whereIn('unit_organisasi_id', $unitIds)->count();
+        }
+
+        return view('jabatan.index', compact('perangkatDaerah'));
+    }
+
+    /**
+     * API: Get jabatan untuk satu perangkat daerah
+     */
+    public function getJabatanByPerangkat(Request $request, $perangkatId): JsonResponse
+    {
+        try {
+            $perPage = (int) $request->query('per_page', 50);
+            $page = (int) $request->query('page', 1);
+
+            // Ambil semua unit dalam perangkat ini
+            $units = UnitOrganisasi::where('perangkat_daerah_id', $perangkatId)
+                ->orderBy('kode', 'asc')
+                ->get();
+
+            // Ambil semua jabatan dari unit-unit ini
+            $unitIds = $units->pluck('id')->toArray();
+            $allJabatan = Jabatan::whereIn('unit_organisasi_id', $unitIds)
+                ->orderBy('kode', 'asc')
+                ->get();
+
+            // Group by unit
+            $grouped = [];
+            foreach ($allJabatan as $jab) {
+                $unitNama = $jab->unitOrganisasi->nama ?? 'Unknown';
+                if (!isset($grouped[$unitNama])) {
+                    $grouped[$unitNama] = [];
+                }
+                $grouped[$unitNama][] = $jab;
+            }
+
+            // Pagination
+            $total = count($grouped);
+            $lastPage = ceil($total / $perPage) ?: 1;
+            $items = array_slice($grouped, ($page - 1) * $perPage, $perPage, true);
+
+            return response()->json([
+                'success' => true,
+                'data' => $items,
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => $lastPage,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Get jabatan by perangkat error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat data: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Search jabatan
      */
     public function search(Request $request): JsonResponse
     {
         try {
             $q = trim((string) $request->query('q', ''));
 
-            if (empty($q) || strlen($q) < 2) {
+            if (empty($q)) {
                 return response()->json([
                     'success' => true,
                     'data' => [],
                 ]);
             }
 
-            // Raw query lebih cepat untuk search
-            $jabatans = DB::table('jabatan')
-                ->join('unit_organisasi', 'jabatan.unit_organisasi_id', '=', 'unit_organisasi.id')
-                ->join('perangkat_daerah', 'unit_organisasi.perangkat_daerah_id', '=', 'perangkat_daerah.id')
-                ->where('jabatan.nama', 'like', '%' . $q . '%')
-                ->orWhere('jabatan.kode', 'like', '%' . $q . '%')
-                ->select(
-                    'jabatan.id',
-                    'jabatan.kode',
-                    'jabatan.nama',
-                    'jabatan.b',
-                    'jabatan.k',
-                    'unit_organisasi.nama as unit_nama',
-                    'perangkat_daerah.nama as perangkat_nama'
-                )
+            $jabatans = Jabatan::with(['unitOrganisasi.perangkatDaerah'])
+                ->where(function ($query) use ($q) {
+                    $query->where('jabatan.nama', 'like', '%' . $q . '%')
+                          ->orWhere('jabatan.kode', 'like', '%' . $q . '%');
+                })
                 ->orderBy('jabatan.kode', 'asc')
-                ->limit(500) // Maksimal 500 hasil
+                ->limit(500)
                 ->get();
 
             // Group hasil
             $grouped = [];
             foreach ($jabatans as $jab) {
-                if (!isset($grouped[$jab->perangkat_nama])) {
-                    $grouped[$jab->perangkat_nama] = [];
+                $pdName = $jab->unitOrganisasi->perangkatDaerah->nama ?? 'Unknown';
+                $unitName = $jab->unitOrganisasi->nama ?? 'Unknown';
+                
+                if (!isset($grouped[$pdName])) {
+                    $grouped[$pdName] = [];
                 }
-                if (!isset($grouped[$jab->perangkat_nama][$jab->unit_nama])) {
-                    $grouped[$jab->perangkat_nama][$jab->unit_nama] = [];
+                if (!isset($grouped[$pdName][$unitName])) {
+                    $grouped[$pdName][$unitName] = [];
                 }
-                $grouped[$jab->perangkat_nama][$jab->unit_nama][] = $jab;
+                $grouped[$pdName][$unitName][] = $jab;
             }
 
             return response()->json([
