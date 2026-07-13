@@ -6,12 +6,12 @@
 <style>
   /* Tweakable variables */
   :root {
-    --header-padding-vertical: 5px;   /* height/vertical padding of the blue banner */
-    --row-padding-vertical: 8px;     /* vertical padding inside each row */
-    --row-padding-horizontal: 16px;   /* horizontal padding inside each row */
-    --row-gap: 14px;                  /* grid gap between columns */
-    --number-width: 45px;             /* width of number badge column */
-    --number-height: 28px;            /* height of number badge */
+    --header-padding-vertical: 5px;
+    --row-padding-vertical: 8px;
+    --row-padding-horizontal: 16px;
+    --row-gap: 14px;
+    --number-width: 45px;
+    --number-height: 28px;
   }
 
   /* ===== CONTAINER & LAYOUT ===== */
@@ -64,7 +64,7 @@
   .search-clear-btn:hover { color: #999; }
   .search-box input:not(:placeholder-shown) ~ .search-clear-btn { display: block; }
 
-  /* ===== CARD HEADER / BANNER (match unit_organisasi) ===== */
+  /* ===== CARD HEADER / BANNER ===== */
   .card-header {
     background: linear-gradient(135deg, #0b2545 0%, #0b58a6 100%);
     padding: var(--header-padding-vertical) 16px;
@@ -76,15 +76,14 @@
     margin: 0;
   }
 
-  /* placeholder right area (keeps header layout same as unit_organisasi) */
   .header-placeholder { width: 140px; height: 36px; }
 
-  /* ===== UNIT ROW (identical to unit_organisasi) ===== */
+  /* ===== UNIT ROW (TANPA KOLOM KODE) ===== */
   .unit-list { display: flex; flex-direction: column; }
 
   .unit-row {
     display: grid;
-    grid-template-columns: var(--number-width) 90px 1fr 150px auto;
+    grid-template-columns: var(--number-width) 1fr 150px auto;
     gap: var(--row-gap);
     align-items: center;
     padding: var(--row-padding-vertical) var(--row-padding-horizontal);
@@ -99,7 +98,7 @@
   .unit-row[data-level="2"] { padding-left: 36px; background-color: #f8f9fb; }
   .unit-row[data-level="3"] { padding-left: 56px; background-color: #ffffff; }
 
-  /* ===== NUMBER BADGE (left) - make it like unit_organisasi .unit-no ===== */
+  /* ===== NUMBER BADGE (left) ===== */
   .unit-no {
     font-weight: 400;
     color: #0b58a6;
@@ -114,26 +113,10 @@
     height: var(--number-height);
   }
 
-  /* ===== unit-kode kept to match structure (second column) but we leave it blank for PD */
-  .unit-kode {
-    background: #e3f2fd;
-    color: #0b58a6;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-weight: 400;
-    font-size: 12px;
-    text-align: center;
-    min-width: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 28px;
-  }
-
   .unit-info { display: flex; flex-direction: column; gap: 3px; }
   .unit-nama { font-weight: 400; color: #2c3e50; font-size: 13px; line-height: 1.4; }
 
-  /* ===== UNIT ACTIONS and BUTTONS - copied from unit_organisasi to ensure identical style ===== */
+  /* ===== UNIT ACTIONS and BUTTONS ===== */
   .unit-actions {
     display: flex;
     gap: 8px;
@@ -175,11 +158,10 @@
     box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
   }
 
-  /* ===== Optional small adjustments for exact pixel parity on narrow screens ===== */
+  /* ===== RESPONSIVE ===== */
   @media (max-width: 768px) {
     .search-container { justify-content: flex-start; flex-direction: column; }
-    .unit-row { grid-template-columns: 45px 80px 1fr 120px auto; gap: 10px; padding: 10px; }
-    .unit-kode { min-width: 80px; height: 26px; }
+    .unit-row { grid-template-columns: 45px 1fr 120px auto; gap: 10px; padding: 10px; }
     .unit-no { min-width: 40px; height: 26px; }
   }
 </style>
@@ -207,7 +189,6 @@
             @foreach($perangkat as $index => $pd)
               <div class="unit-row" data-level="1">
                 <div class="unit-no">{{ $index + 1 }}</div>
-                <div class="unit-kode">&nbsp;</div>
                 <div class="unit-info">
                   <div class="unit-nama">{{ $pd->nama }}</div>
                 </div>

@@ -11,16 +11,15 @@ use Illuminate\Http\JsonResponse;
 
 class UnitOrganisasiController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index(): View
     {
-        // Ambil daftar Perangkat Daerah + jumlah Unit yang valid (max 3 level kode)
         $perangkatDaerah = PerangkatDaerah::with(['unitOrganisasi' => function ($query) {
-            $query->get()->filter(function ($unit) {
-                return $this->getCodeLevel($unit->kode) <= 3;
-            });
+            $query->orderBy('kode', 'asc');
         }])->orderBy('nama', 'asc')->get();
 
-        // Hitung ulang unit_organisasi_count hanya yang memiliki kode <= 3 level
         foreach ($perangkatDaerah as $pd) {
             $pd->unit_organisasi_count = $pd->unitOrganisasi->filter(function ($unit) {
                 return $this->getCodeLevel($unit->kode) <= 3;
@@ -30,12 +29,18 @@ class UnitOrganisasiController extends Controller
         return view('unit_organisasi.index', compact('perangkatDaerah'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create(): View
     {
         $perangkatDaerah = PerangkatDaerah::all();
         return view('unit_organisasi.create', compact('perangkatDaerah'));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -51,12 +56,26 @@ class UnitOrganisasiController extends Controller
             ->with('success', 'Unit Organisasi berhasil ditambahkan');
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(UnitOrganisasi $unitOrganisasi): View
+    {
+        return view('unit_organisasi.show', compact('unitOrganisasi'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(UnitOrganisasi $unitOrganisasi): View
     {
         $perangkatDaerah = PerangkatDaerah::all();
         return view('unit_organisasi.edit', compact('unitOrganisasi', 'perangkatDaerah'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, UnitOrganisasi $unitOrganisasi): RedirectResponse
     {
         $validated = $request->validate([
@@ -72,6 +91,9 @@ class UnitOrganisasiController extends Controller
             ->with('success', 'Unit Organisasi berhasil diperbarui');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Request $request, UnitOrganisasi $unitOrganisasi)
     {
         $unitOrganisasi->delete();
@@ -86,7 +108,6 @@ class UnitOrganisasiController extends Controller
 
     /**
      * Helper: Hitung jumlah level dalam kode
-     * Contoh: "5.2.1" = 3 level, "5.2" = 2 level, "5" = 1 level
      */
     private function getCodeLevel($kode)
     {
@@ -96,90 +117,111 @@ class UnitOrganisasiController extends Controller
 
     /**
      * API: Ambil unit organisasi untuk satu Perangkat Daerah
-     * Filter: hanya kode dengan max 3 level (1.2.3)
-     * GET /perangkat_daerah/{id}/units?per_page=50&page=1
      */
     public function units(Request $request, $id): JsonResponse
     {
-        $perPage = (int) $request->query('per_page', 50);
-        
-        // Ambil semua unit untuk PD ini, lalu filter di PHP
-        $allUnits = UnitOrganisasi::where('perangkat_daerah_id', $id)
-            ->orderBy('kode', 'asc')
-            ->get();
+        try {
+            $perPage = (int) $request->query('per_page', 50);
+            
+            $allUnits = UnitOrganisasi::where('perangkat_daerah_id', $id)
+                ->orderBy('kode', 'asc')
+                ->get();
 
-        // Filter hanya kode dengan max 3 level
-        $filteredUnits = $allUnits->filter(function ($unit) {
-            return $this->getCodeLevel($unit->kode) <= 3;
-        })->values();
+            $filteredUnits = $allUnits->filter(function ($unit) {
+                return $this->getCodeLevel($unit->kode) <= 3;
+            })->values();
 
-        // Manual pagination
-        $page = (int) $request->query('page', 1);
-        $total = $filteredUnits->count();
-        $lastPage = ceil($total / $perPage) ?: 1;
-        $items = $filteredUnits->slice(($page - 1) * $perPage, $perPage)->values();
+            $page = (int) $request->query('page', 1);
+            $total = $filteredUnits->count();
+            $lastPage = ceil($total / $perPage) ?: 1;
+            $items = $filteredUnits->slice(($page - 1) * $perPage, $perPage)->values();
 
-        // Tambahkan level info untuk setiap unit
-        $items->each(function ($unit) {
-            $unit->_level = $this->getCodeLevel($unit->kode);
-        });
+            $items->each(function ($unit) {
+                $unit->_level = $this->getCodeLevel($unit->kode);
+            });
 
-        return response()->json([
-            'data' => $items,
-            'current_page' => $page,
-            'per_page' => $perPage,
-            'total' => $total,
-            'last_page' => $lastPage,
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $items,
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => $lastPage,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('UnitOrganisasi units error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat data: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
     }
 
     /**
      * API: Search units (server-side search)
-     * Filter: hanya kode dengan max 3 level
      */
     public function search(Request $request): JsonResponse
     {
-        $q = trim((string) $request->query('q', ''));
-        $perPage = (int) $request->query('per_page', 500);
+        try {
+            $q = trim((string) $request->query('q', ''));
+            $perPage = (int) $request->query('per_page', 500);
 
-        $query = UnitOrganisasi::with('perangkatDaerah');
+            \Log::info('UnitOrganisasi search query: ' . $q);
 
-        if ($q !== '') {
-            $query->where(function ($w) use ($q) {
-                $w->where('nama', 'like', '%' . $q . '%')
-                    ->orWhere('kode', 'like', '%' . $q . '%');
+            if (empty($q)) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [],
+                    'current_page' => 1,
+                    'per_page' => $perPage,
+                    'total' => 0,
+                    'last_page' => 1,
+                ]);
+            }
+
+            $query = UnitOrganisasi::with('perangkatDaerah')
+                ->where(function ($w) use ($q) {
+                    $w->where('nama', 'like', '%' . $q . '%')
+                      ->orWhere('kode', 'like', '%' . $q . '%');
+                });
+
+            $allResults = $query->get();
+
+            \Log::info('UnitOrganisasi search found: ' . $allResults->count() . ' results');
+
+            $filteredResults = $allResults->filter(function ($unit) {
+                return $this->getCodeLevel($unit->kode) <= 3;
+            })->values();
+
+            $filteredResults = $filteredResults->sortBy(function ($unit) {
+                return $unit->perangkat_daerah_id . '_' . str_pad($unit->kode, 20, '0', STR_PAD_LEFT);
+            })->values();
+
+            $page = (int) $request->query('page', 1);
+            $total = $filteredResults->count();
+            $lastPage = ceil($total / $perPage) ?: 1;
+            $items = $filteredResults->slice(($page - 1) * $perPage, $perPage)->values();
+
+            $items->each(function ($unit) {
+                $unit->_level = $this->getCodeLevel($unit->kode);
             });
+
+            return response()->json([
+                'success' => true,
+                'data' => $items,
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => $lastPage,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('UnitOrganisasi search error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal melakukan pencarian: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
         }
-
-        $allResults = $query->get();
-
-        // Filter hanya kode dengan max 3 level
-        $filteredResults = $allResults->filter(function ($unit) {
-            return $this->getCodeLevel($unit->kode) <= 3;
-        })->values();
-
-        // Sort by perangkat_daerah_id dan kode
-        $filteredResults = $filteredResults->sortBy(function ($unit) {
-            return $unit->perangkat_daerah_id . '_' . str_pad($unit->kode, 20, '0', STR_PAD_LEFT);
-        })->values();
-
-        // Manual pagination
-        $page = (int) $request->query('page', 1);
-        $total = $filteredResults->count();
-        $lastPage = ceil($total / $perPage) ?: 1;
-        $items = $filteredResults->slice(($page - 1) * $perPage, $perPage)->values();
-
-        // Tambahkan level info
-        $items->each(function ($unit) {
-            $unit->_level = $this->getCodeLevel($unit->kode);
-        });
-
-        return response()->json([
-            'data' => $items,
-            'current_page' => $page,
-            'per_page' => $perPage,
-            'total' => $total,
-            'last_page' => $lastPage,
-        ]);
     }
 }

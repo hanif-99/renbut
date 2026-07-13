@@ -7,7 +7,7 @@
 <style>
   /* ===== CONTAINER & LAYOUT ===== */
   .search-container { 
-    margin-bottom: 10px; /* reduce vertical gap */
+    margin-bottom: 10px;
     display: flex; 
     gap: 10px; 
     align-items: center; 
@@ -16,14 +16,14 @@
   }
 
   .search-box { 
-    flex: 0 1 200px; /* make search shorter */
+    flex: 0 1 200px;
     max-width: 260px;
     position: relative; 
   }
 
   .search-box input { 
     width: 100%; 
-    padding: 8px 30px 8px 12px; /* reduce padding */
+    padding: 8px 30px 8px 12px;
     border: 1px solid #ddd; 
     border-radius: 6px; 
     font-size: 14px; 
@@ -66,8 +66,8 @@
     border-left: none;
     color: #2c3e50; 
     font-weight: 400;
-    padding: 10px 12px; /* smaller padding */
-    margin-top: 8px; /* smaller gap between items */
+    padding: 10px 12px;
+    margin-top: 8px;
     cursor: pointer; 
     display: flex; 
     justify-content: space-between; 
@@ -85,7 +85,7 @@
   .opd-header-title { 
     display: flex; 
     align-items: center; 
-    gap: 8px; /* reduce gap */
+    gap: 8px;
     font-size: 14px; 
     flex: 1;
   }
@@ -99,17 +99,17 @@
   .opd-name { 
     font-weight: 400; 
     color: #2c3e50; 
-    font-size: 13px; /* slightly smaller to fit */
+    font-size: 13px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: calc(100% - 120px); /* keep space for badge */
+    max-width: calc(100% - 120px);
   }
 
   .unit-count-badge { 
     background: #e3f2fd;
     color: #0b58a6; 
-    padding: 4px 8px; /* smaller badge */
+    padding: 4px 8px;
     border-radius: 12px; 
     font-size: 11px; 
     font-weight: 400;
@@ -160,10 +160,10 @@
 
   .unit-row { 
     display: grid; 
-    grid-template-columns: 90px 1fr 130px auto; /* compact columns */
+    grid-template-columns: 90px 1fr 130px auto;
     gap: 12px; 
     align-items: center; 
-    padding: 8px 12px; /* reduced padding */
+    padding: 8px 12px;
     border-bottom: 1px solid #f0f0f0;
     font-size: 13px;
   }
@@ -191,7 +191,7 @@
 
   /* ===== UNIT CODE (KODE) ===== */
   .unit-kode { 
-    background: #eaf6ff; /* lighter for compact */
+    background: #eaf6ff;
     color: #0b58a6; 
     padding: 5px 8px; 
     border-radius: 4px; 
@@ -301,7 +301,7 @@
 
   .show-more-btn { 
     display: inline-block; 
-    margin-top: 8px; 
+    margin: 8px; 
     background: #eef6ff;
     color: #0b58a6; 
     border: 1px solid #cfe4ff;
@@ -321,7 +321,7 @@
   /* ===== NO DATA MESSAGE ===== */
   .no-data-message {
     text-align: center;
-    padding: 28px 12px; /* smaller */
+    padding: 28px 12px;
     color: #7f8c8d;
   }
 
@@ -453,36 +453,63 @@ const searchUrl = "{{ route('unit_organisasi.search') }}";
 const unitBaseUrl = "{{ url('unit_organisasi') }}";
 
 let searchDebounceTimer = null;
+let isSearching = false;
 const SHOW_FIRST = 8;
 
+// Store original HTML structure
+let originalOpdContainer = '';
+
+function escapeHtml(unsafe) {
+  if (unsafe === null || unsafe === undefined) return '';
+  return String(unsafe).replace(/[&<>"'`=\/]/g, function (s) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;' })[s];
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Simpan struktur awal OPD
+  const opdContainer = document.getElementById('opdContainer');
+  if (opdContainer) {
+    originalOpdContainer = opdContainer.innerHTML;
+  }
+
+  // Setup OPD headers
   document.querySelectorAll('.opd-header').forEach(header => {
-    header.addEventListener('click', () => toggleOPD(header));
+    header.addEventListener('click', function() {
+      toggleOPD(this);
+    });
   });
 
+  // Setup search input
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('input', function(e) {
       const q = e.target.value.trim();
+      
       if (q === '') {
         clearSearch();
         return;
       }
+      
       if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
-        serverSearch(q);
-      }, 300);
+        if (q.length > 0) {
+          serverSearch(q);
+        }
+      }, 500);
     });
   }
 });
 
 async function toggleOPD(headerElement) {
   if (!headerElement) return;
+  
   const opdId = headerElement.getAttribute('data-opd-id');
   const hasUnits = headerElement.getAttribute('data-has-units') === 'true';
   const detailsElement = document.getElementById('details-' + opdId);
+  
   if (!detailsElement) return;
-
+  
   const isOpen = headerElement.classList.contains('open');
 
   if (!isOpen) {
@@ -572,35 +599,43 @@ function renderUnitsIntoDetails(detailsElement, json) {
 }
 
 async function serverSearch(query) {
+  if (isSearching || query.trim().length === 0) return;
+  
   const container = document.getElementById('opdContainer');
   if (!container) return;
-  container.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0b58a6;"></i> <p style="margin-top: 12px; color: #666;">Mencari...</p></div>';
+  
+  isSearching = true;
+  container.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0b58a6;"></i><p style="margin-top: 12px; color: #666;">Mencari data...</p></div>';
 
   try {
-    const perPage = 500;
-    const url = `${searchUrl}?q=${encodeURIComponent(query)}&per_page=${perPage}`;
+    const url = `${searchUrl}?q=${encodeURIComponent(query)}`;
     const res = await fetch(url, { 
+      method: 'GET',
       headers: { 'Accept': 'application/json' }, 
       credentials: 'same-origin' 
     });
     if (!res.ok) {
       const txt = await res.text();
       console.error('Search failed', res.status, txt);
-      container.innerHTML = `<div class="no-results"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>`;
+      container.innerHTML = `<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>`;
+      isSearching = false;
       return;
     }
     const json = await res.json();
     renderSearchResults(container, json);
+    isSearching = false;
   } catch (e) {
     console.error('Error serverSearch:', e);
-    container.innerHTML = '<div class="no-results"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>';
+    container.innerHTML = '<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>';
+    isSearching = false;
   }
 }
 
 function renderSearchResults(container, json) {
   const units = json.data || [];
+  
   if (units.length === 0) {
-    container.innerHTML = '<div class="no-results"><i class="fas fa-search"></i><p>Tidak ada hasil yang sesuai</p></div>';
+    container.innerHTML = '<div class="no-data-message"><i class="fas fa-search"></i><p>Tidak ada hasil yang sesuai</p></div>';
     return;
   }
 
@@ -676,6 +711,7 @@ async function deleteUnit(id, opdId) {
     if (json.success) {
       const detailsElement = document.getElementById('details-' + opdId);
       if (detailsElement && detailsElement.dataset.loaded === '1' && detailsElement.style.display !== 'none') {
+        detailsElement.dataset.loaded = '0';
         loadUnits(opdId);
       }
     } else {
@@ -688,25 +724,41 @@ async function deleteUnit(id, opdId) {
 }
 
 function clearSearch() {
+  // Bersihkan input search
   const searchInput = document.getElementById('searchInput');
-  if (!searchInput) return;
-  searchInput.value = '';
-  searchInput.focus();
-  document.querySelectorAll('.opd-header').forEach(h => {
-    h.style.display = '';
-    h.classList.remove('open');
-  });
-  document.querySelectorAll('.unit-details').forEach(d => {
-    d.classList.remove('open');
-    d.style.display = 'none';
-  });
-}
-
-function escapeHtml(unsafe) {
-  if (unsafe === null || unsafe === undefined) return '';
-  return String(unsafe).replace(/[&<>"'`=\/]/g, function (s) {
-    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;' })[s];
-  });
+  if (searchInput) {
+    searchInput.value = '';
+    searchInput.focus();
+  }
+  
+  // Batalkan debounce timer
+  if (searchDebounceTimer) {
+    clearTimeout(searchDebounceTimer);
+  }
+  
+  // Reset flag
+  isSearching = false;
+  
+  // Restore original OPD structure
+  const opdContainer = document.getElementById('opdContainer');
+  if (opdContainer && originalOpdContainer) {
+    opdContainer.innerHTML = originalOpdContainer;
+    
+    // Re-attach click listeners ke OPD headers
+    document.querySelectorAll('.opd-header').forEach(header => {
+      header.addEventListener('click', function() {
+        toggleOPD(this);
+      });
+    });
+    
+    // Reset semua details
+    document.querySelectorAll('.unit-details').forEach(d => {
+      d.classList.remove('open');
+      d.style.display = 'none';
+      d.dataset.loaded = '0';
+      d.innerHTML = '';
+    });
+  }
 }
 </script>
 @endsection

@@ -6,59 +6,57 @@ use App\Models\Jabatan;
 use App\Models\UnitOrganisasi;
 use App\Models\JenisJabatan;
 use App\Models\Jenjang;
+use App\Models\PerangkatDaerah;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
 class JabatanController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        // Fetch dengan eager load dan sort by kode
-        $allJabatan = Jabatan::with('unitOrganisasi.perangkatDaerah', 'jenisJabatan', 'jenjang')
-            ->orderBy('kode', 'asc')
-            ->get();
-        
-        // Group berdasarkan kode induk (parent code)
-        $groupedJabatan = $this->groupByParentCode($allJabatan);
-        
-        return view('jabatan.index', compact('groupedJabatan', 'allJabatan'));
-    }
+        // Get perpage parameter
+        $perPage = (int) $request->input('per_page', 10);
+        if (!in_array($perPage, [5, 10, 20, 50])) {
+            $perPage = 10;
+        }
 
-    /**
-     * Mengelompokkan jabatan berdasarkan kode induk
-     * Contoh: "1" adalah parent dari "1.1", "1.2" dst
-     */
-    private function groupByParentCode($jabatan)
-    {
-        $grouped = [];
-        
-        foreach ($jabatan as $item) {
-            $parentCode = $this->getParentCode($item->kode);
-            
-            if (!isset($grouped[$parentCode])) {
-                $grouped[$parentCode] = [];
+        // ✅ PAGINATION UNTUK PERFORMA OPTIMAL
+        // Fetch perangkat daerah dengan pagination
+        $perangkatDaerahs = PerangkatDaerah::with([
+            'unitOrganisasi' => function ($query) {
+                $query->with([
+                    'jabatan' => function ($subQuery) {
+                        $subQuery->select('id', 'kode', 'nama', 'unit_organisasi_id', 'b', 'k')
+                                 ->orderBy('kode', 'asc');
+                    }
+                ])->orderBy('nama', 'asc');
             }
-            
-            $grouped[$parentCode][] = $item;
-        }
-        
-        return $grouped;
-    }
+        ])
+        ->orderBy('nama', 'asc')
+        ->paginate($perPage);
 
-    /**
-     * Ekstrak kode induk dari kode jabatan
-     * "1.1.1" -> "1.1", "1.1" -> "1", "1" -> null
-     */
-    private function getParentCode($code)
-    {
-        if (strpos($code, '.') === false) {
-            return null; // Tidak ada parent
+        // Filter perangkat yang memiliki unit organisasi dan jabatan
+        $groupedByPerangkat = [];
+        foreach ($perangkatDaerahs as $perangkat) {
+            $unitWithJabatan = [];
+            foreach ($perangkat->unitOrganisasi as $unit) {
+                if ($unit->jabatan->count() > 0) {
+                    $unitWithJabatan[] = [
+                        'unit' => $unit,
+                        'jabatan' => $unit->jabatan
+                    ];
+                }
+            }
+            if (count($unitWithJabatan) > 0) {
+                $groupedByPerangkat[] = [
+                    'perangkat' => $perangkat,
+                    'units' => $unitWithJabatan
+                ];
+            }
         }
-        
-        $parts = explode('.', $code);
-        array_pop($parts);
-        return implode('.', $parts);
+
+        return view('jabatan.index', compact('groupedByPerangkat', 'perangkatDaerahs', 'perPage'));
     }
 
     public function create(): View
