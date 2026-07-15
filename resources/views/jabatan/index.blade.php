@@ -4,15 +4,13 @@
 
 @section('css')
 <style>
-  /* ===== CONTAINER & LAYOUT ===== */
   .search-container { 
-    margin: 0;
-    padding: 16px 8px 8px;
+    margin-bottom: 10px;
     display: flex; 
     gap: 10px; 
     align-items: center; 
     justify-content: flex-end; 
-    flex-wrap: wrap;
+    flex-wrap: wrap; 
   }
 
   .search-box { 
@@ -52,38 +50,29 @@
     transition: color 0.2s ease; 
   }
 
-  .search-clear-btn:hover {
-    color: #999;
-  }
+  .search-clear-btn:hover { color: #999; }
 
-  .search-box input:not(:placeholder-shown) ~ .search-clear-btn { 
-    display: block; 
-  }
+  .search-box input:not(:placeholder-shown) ~ .search-clear-btn { display: block; }
 
-  /* ===== PERANGKAT HEADER ===== */
-  .perangkat-header { 
+  /* PD HEADER */
+  .pd-header { 
     background: #f8f9fa;
-    border-left: 4px solid #0b58a6;
     color: #2c3e50; 
-    font-weight: 500;
-    padding: 12px 12px;
+    font-weight: 400;
+    padding: 10px 12px;
     margin-top: 8px;
-    margin-bottom: 0;
     cursor: pointer; 
     display: flex; 
     justify-content: space-between; 
     align-items: center;
-    border-radius: 6px 6px 0 0;
+    border-radius: 6px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     transition: all 0.12s ease;
   }
 
-  .perangkat-header:hover {
-    background: #f0f2f5;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  }
+  .pd-header:hover { background: #f0f2f5; }
 
-  .perangkat-header-title { 
+  .pd-header-title { 
     display: flex; 
     align-items: center; 
     gap: 8px;
@@ -91,20 +80,16 @@
     flex: 1;
   }
 
-  .perangkat-header i:first-child {
-    font-size: 14px;
-    color: #0b58a6;
-    flex-shrink: 0;
-  }
+  .pd-header i:first-child { font-size: 14px; color: #0b58a6; flex-shrink: 0; }
 
-  .perangkat-name { 
-    font-weight: 500; 
+  .pd-name { 
+    font-weight: 400; 
     color: #2c3e50; 
     font-size: 13px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: calc(100% - 140px);
+    max-width: calc(100% - 120px);
   }
 
   .unit-count-badge { 
@@ -113,7 +98,7 @@
     padding: 4px 8px;
     border-radius: 12px; 
     font-size: 11px; 
-    font-weight: 500;
+    font-weight: 400;
     margin-left: 6px;
     flex-shrink: 0;
   }
@@ -132,12 +117,9 @@
     margin-right: 4px;
   }
 
-  .perangkat-header.open .toggle-icon { 
-    transform: rotate(0deg); 
-  }
+  .pd-header.open .toggle-icon { transform: rotate(0deg); }
 
-  /* ===== DETAILS CONTAINER ===== */
-  .perangkat-details { 
+  .pd-details { 
     display: none; 
     padding: 0; 
     background-color: #fff; 
@@ -149,24 +131,11 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
-  .perangkat-details.open { 
-    display: block; 
-  }
+  .pd-details.open { display: block; }
 
-  /* ===== UNIT GROUP (Accordion) ===== */
-  .unit-group {
-    border-bottom: 1px solid #f0f0f0;
-  }
+  /* UNIT HEADER - NO CODE HERE */
+  .unit-list { display: flex; flex-direction: column; }
 
-  .unit-group:last-child {
-    border-bottom: none;
-  }
-
-  .unit-group.expanded .unit-body {
-    display: block;
-  }
-
-  /* Unit Header (Clickable) */
   .unit-header {
     padding: 10px 12px;
     background-color: #fafbfc;
@@ -179,11 +148,10 @@
     align-items: center;
     transition: background-color 0.12s ease;
     user-select: none;
+    border-bottom: 1px solid #f0f0f0;
   }
 
-  .unit-header:hover {
-    background-color: #f0f2f5;
-  }
+  .unit-header:hover { background-color: #f0f2f5; }
 
   .unit-header-title {
     display: flex;
@@ -206,35 +174,6 @@
     flex: 1;
   }
 
-  .unit-header-title .code {
-    background: #e3f2fd;
-    color: #0b58a6;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 600;
-    flex-shrink: 0;
-    margin-right: 6px;
-  }
-
-  .unit-duplicate-badge {
-    background: #fff3e0;
-    color: #e65100;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 600;
-    flex-shrink: 0;
-    margin-left: 4px;
-  }
-
-  .unit-header-stats {
-    display: flex;
-    gap: 6px;
-    flex-shrink: 0;
-    margin-left: 8px;
-  }
-
   .unit-badge {
     background: #e8f5e9;
     color: #2e7d32;
@@ -242,6 +181,8 @@
     border-radius: 3px;
     font-size: 11px;
     font-weight: 500;
+    flex-shrink: 0;
+    margin-left: 8px;
   }
 
   .unit-toggle {
@@ -258,29 +199,17 @@
     margin-left: 8px;
   }
 
-  .unit-group.expanded .unit-toggle {
-    transform: rotate(0deg);
-  }
+  .unit-header.expanded .unit-toggle { transform: rotate(0deg); }
 
-  /* Unit Body (Jabatan List) */
   .unit-body {
     display: none;
     padding: 0;
     background-color: #fff;
   }
 
-  .unit-info-box {
-    padding: 8px 12px;
-    background: #fff3e0;
-    border-bottom: 1px solid #ffe0b2;
-    color: #e65100;
-    font-size: 12px;
-  }
+  .unit-body.expanded { display: block; }
 
-  .unit-info-box i {
-    margin-right: 4px;
-  }
-
+  /* JABATAN ROW - CODE HERE */
   .jabatan-list { 
     display: flex;
     flex-direction: column;
@@ -297,9 +226,7 @@
     font-size: 12px;
   }
 
-  .jabatan-row:last-child {
-    border-bottom: none;
-  }
+  .jabatan-row:last-child { border-bottom: none; }
 
   .jabatan-kode { 
     background: #eaf6ff;
@@ -372,104 +299,49 @@
     min-width: 24px;
   }
 
-  .btn-edit {
-    background-color: #ffc107;
-    color: #000;
+  .btn-edit { background-color: #ffc107; color: #000; }
+  .btn-edit:hover { background-color: #ffb300; }
+  .btn-delete { background-color: #dc3545; color: #fff; }
+  .btn-delete:hover { background-color: #c82333; }
+
+  /* SEARCH RESULTS */
+  .search-results { display: none; }
+  .search-results.show { display: block; }
+
+  .pd-group { margin-bottom: 12px; }
+  .pd-group .pd-header-search { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    gap: 8px; 
+    padding: 10px 12px; 
+    background: #f8f9fa;
+    border: 1px solid #e8eaed; 
+    border-radius: 6px;
+    border-bottom: none;
   }
 
-  .btn-edit:hover {
-    background-color: #ffb300;
+  .pd-results { 
+    background: #fff; 
+    border: 1px solid #e8eaed; 
+    border-radius: 0 0 6px 6px; 
   }
 
-  .btn-delete {
-    background-color: #dc3545;
-    color: #fff;
-  }
-
-  .btn-delete:hover {
-    background-color: #c82333;
-  }
-
-  /* Loading & No Data */
   .no-data-message {
     text-align: center;
     padding: 28px 12px;
     color: #7f8c8d;
   }
 
-  .no-data-message i {
-    font-size: 28px;
-    margin-bottom: 8px;
-    display: block;
-    color: #bdc3c7;
-  }
+  .no-data-message i { font-size: 28px; margin-bottom: 8px; display: block; color: #bdc3c7; }
+  .no-data-message p { font-size: 13px; margin: 0; }
 
-  .no-data-message p {
-    font-size: 13px;
-    margin: 0;
-  }
-
-  .loading-spinner {
-    text-align: center;
-    padding: 20px;
-  }
-
-  .loading-spinner i {
-    font-size: 24px;
-    color: #0b58a6;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  /* Card Header */
-  .card-header {
-    background: linear-gradient(135deg, #0b2545 0%, #0b58a6 100%);
-    padding: 8px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .card-header h5 {
-    color: #fff;
-    font-weight: 500;
-    font-size: 16px;
-    margin: 0;
-    line-height: 1.1;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .card-body {
-    padding: 0;
-  }
-
-  .search-results-view {
-    display: none;
-    padding: 16px;
-  }
-
-  .search-results-view.show {
-    display: block;
-  }
+  .card-header { background: linear-gradient(135deg, #0b2545 0%, #0b58a6 100%); }
+  .card-header h5 { color: #fff; font-weight: 500; font-size: 16px; }
 
   @media (max-width: 768px) {
-    .jabatan-row { 
-      grid-template-columns: 1fr; 
-      gap: 8px; 
-    }
-    .jabatan-actions { 
-      justify-content: flex-start;
-    }
-    .unit-header {
-      flex-wrap: wrap;
-    }
+    .jabatan-row { grid-template-columns: 1fr; gap: 8px; }
+    .jabatan-actions { justify-content: flex-start; }
   }
 </style>
 @endsection
@@ -498,20 +370,19 @@
 
           <div id="normalView" style="padding: 0 16px; margin-top: -4px;">
             @foreach($perangkatDaerah as $pd)
-              <div class="perangkat-header collapsed" data-pd-id="{{ $pd->id }}">
-                <div class="perangkat-header-title">
+              <div class="pd-header collapsed" data-pd-id="{{ $pd->id }}" data-has-units="{{ $pd->unit_count > 0 ? 'true' : 'false' }}">
+                <div class="pd-header-title">
                   <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
                   <i class="fas fa-building"></i>
-                  <span class="perangkat-name">{{ $pd->nama }}</span>
+                  <span class="pd-name">{{ $pd->nama }}</span>
                   <span class="unit-count-badge">{{ $pd->unit_count }} Unit</span>
                 </div>
               </div>
-
-              <div class="perangkat-details" id="details-{{ $pd->id }}" data-loaded="0"></div>
+              <div class="pd-details" id="details-{{ $pd->id }}" data-loaded="0"></div>
             @endforeach
           </div>
 
-          <div id="searchResultsView" class="search-results-view main-content"></div>
+          <div id="searchResults" class="search-results"></div>
         @else
           <div class="alert alert-info" style="margin: 16px;">
             <i class="fas fa-info-circle"></i> Belum ada data Perangkat Daerah
@@ -522,7 +393,6 @@
   </div>
 </div>
 
-<!-- Hidden Form for Delete -->
 <form id="deleteForm" method="POST" style="display:none;">
   @csrf
   @method('DELETE')
@@ -534,19 +404,20 @@
 <script>
 const jabatanBaseUrl = "{{ url('jabatan') }}";
 const getUnitsUrl = "{{ route('jabatan.getUnits', ':id') }}";
-const getJabatanByUnitUrl = "{{ route('jabatan.getByUnitJson', ':id') }}";
+const getJabatanUrl = "{{ route('jabatan.getByUnitJson', ':id') }}";
 const searchUrl = "{{ route('jabatan.search') }}";
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
 let searchDebounceTimer = null;
 let isSearching = false;
 let originalView = '';
+const SHOW_FIRST = 8;
 
 function escapeHtml(unsafe) {
   if (unsafe === null || unsafe === undefined) return '';
-  return String(unsafe).replace(/[&<>"'`=\/]/g, function (s) {
-    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;' })[s];
-  });
+  return String(unsafe).replace(/[&<>"'`=\/]/g, s => 
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;' })[s]
+  );
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -555,9 +426,9 @@ document.addEventListener('DOMContentLoaded', () => {
     originalView = normalView.innerHTML;
   }
 
-  document.querySelectorAll('.perangkat-header').forEach(header => {
+  document.querySelectorAll('.pd-header').forEach(header => {
     header.addEventListener('click', function() {
-      togglePerangkat(this);
+      togglePD(this);
     });
   });
 
@@ -579,10 +450,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-async function togglePerangkat(headerElement) {
+async function togglePD(headerElement) {
   if (!headerElement) return;
   
   const pdId = headerElement.getAttribute('data-pd-id');
+  const hasUnits = headerElement.getAttribute('data-has-units') === 'true';
   const detailsElement = document.getElementById('details-' + pdId);
   
   if (!detailsElement) return;
@@ -590,8 +462,16 @@ async function togglePerangkat(headerElement) {
   const isOpen = headerElement.classList.contains('open');
 
   if (!isOpen) {
+    if (!hasUnits) {
+      detailsElement.innerHTML = '<div class="no-data-message"><i class="fas fa-inbox"></i><p>Belum ada Unit Organisasi</p></div>';
+      detailsElement.classList.add('open');
+      headerElement.classList.add('open');
+      detailsElement.style.display = 'block';
+      return;
+    }
+
     if (detailsElement.dataset.loaded === '0') {
-      detailsElement.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>';
+      detailsElement.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="font-size: 26px; color: #0b58a6;"></i></div>';
       detailsElement.classList.add('open');
       detailsElement.style.display = 'block';
       try {
@@ -626,7 +506,7 @@ async function loadUnits(pdId) {
       return;
     }
     const json = await res.json();
-    renderUnitsIntoDetails(detailsElement, json.data || []);
+    renderUnits(detailsElement, json.data || []);
   } catch (e) {
     console.error('Error loadUnits:', e);
     detailsElement.innerHTML = '<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat data</p></div>';
@@ -634,38 +514,31 @@ async function loadUnits(pdId) {
   }
 }
 
-function renderUnitsIntoDetails(detailsElement, units) {
+function renderUnits(detailsElement, units) {
   if (!units || units.length === 0) {
     detailsElement.innerHTML = '<div class="no-data-message"><i class="fas fa-inbox"></i><p>Belum ada Unit Organisasi</p></div>';
     detailsElement.dataset.loaded = '1';
     return;
   }
 
-  let html = '';
+  let html = '<div class="unit-list">';
   units.forEach((unit) => {
-    // Badge untuk menunjukkan duplicate count
-    const duplicateIndicator = unit.duplicate_count && unit.duplicate_count > 1 
-      ? `<span class="unit-duplicate-badge">+${unit.duplicate_count - 1} Duplikat</span>`
-      : '';
-    
+    const unitBodyId = `unit-body-${unit.id}`;
     html += `
-      <div class="unit-group" data-unit-id="${unit.id}">
-        <div class="unit-header" onclick="toggleUnit(event, ${unit.id})">
-          <div class="unit-header-title">
-            <span class="code">${escapeHtml(unit.kode)}</span>
-            <i class="icon fas fa-folder"></i>
-            <span class="name">${escapeHtml(unit.nama)}</span>
-            ${duplicateIndicator}
-          </div>
-          <div class="unit-header-stats">
-            <span class="unit-badge">${unit.jabatan_count} Jabatan</span>
-          </div>
+      <div class="unit-header" onclick="toggleUnit(event, ${unit.id})">
+        <div class="unit-header-title">
+          <i class="icon fas fa-folder"></i>
+          <span class="name">${escapeHtml(unit.nama)}</span>
+        </div>
+        <div>
+          <span class="unit-badge">${unit.jabatan_count} Jabatan</span>
           <span class="unit-toggle"><i class="fas fa-chevron-down"></i></span>
         </div>
-        <div class="unit-body" id="unit-body-${unit.id}" data-loaded="0"></div>
       </div>
+      <div class="unit-body" id="${unitBodyId}" data-loaded="0"></div>
     `;
   });
+  html += '</div>';
 
   detailsElement.innerHTML = html;
   detailsElement.dataset.loaded = '1';
@@ -673,91 +546,89 @@ function renderUnitsIntoDetails(detailsElement, units) {
 
 async function toggleUnit(event, unitId) {
   event.stopPropagation();
-  const unitGroup = document.querySelector(`[data-unit-id="${unitId}"]`);
   const unitBody = document.getElementById(`unit-body-${unitId}`);
+  const header = unitBody?.previousElementSibling;
   
-  if (!unitGroup || !unitBody) return;
+  if (!unitBody || !header) return;
 
-  const isExpanded = unitGroup.classList.contains('expanded');
+  const isExpanded = header.classList.contains('expanded');
 
   if (!isExpanded) {
+    header.classList.add('expanded');
+    unitBody.classList.add('expanded');
+    
     if (unitBody.dataset.loaded === '0') {
-      unitBody.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>';
+      unitBody.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0b58a6;"></i></div>';
       try {
-        await loadJabatanByUnit(unitId);
+        await loadJabatan(unitId);
       } catch (e) {
         console.error(e);
       }
     }
-    unitGroup.classList.add('expanded');
-    unitBody.style.display = 'block';
   } else {
-    unitGroup.classList.remove('expanded');
-    unitBody.style.display = 'none';
+    header.classList.remove('expanded');
+    unitBody.classList.remove('expanded');
   }
 }
 
-async function loadJabatanByUnit(unitId) {
+async function loadJabatan(unitId) {
   const unitBody = document.getElementById(`unit-body-${unitId}`);
   if (!unitBody) return;
 
   try {
-    const url = getJabatanByUnitUrl.replace(':id', unitId);
+    const url = getJabatanUrl.replace(':id', unitId);
     const res = await fetch(url, {
       headers: { 'Accept': 'application/json' },
       credentials: 'same-origin'
     });
     if (!res.ok) {
-      unitBody.innerHTML = '<div class="no-data-message" style="padding: 12px;"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat jabatan</p></div>';
+      unitBody.innerHTML = '<div class="no-data-message" style="padding: 12px;"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat</p></div>';
       unitBody.dataset.loaded = '0';
       return;
     }
     const json = await res.json();
-    
-    // Tampilkan info jika ada duplicate units
-    let infoHtml = '';
-    if (json.duplicate_count && json.duplicate_count > 1) {
-      infoHtml = `<div class="unit-info-box">
-                    <i class="fas fa-info-circle"></i> 
-                    Menampilkan ${json.data.length} Jabatan dari ${json.duplicate_count} unit dengan kode/nama yang sama
-                  </div>`;
-    }
-    
-    renderJabatanIntoUnitBody(unitBody, json.data || [], infoHtml);
+    renderJabatan(unitBody, json.data || {});
   } catch (e) {
-    console.error('Error loadJabatanByUnit:', e);
-    unitBody.innerHTML = '<div class="no-data-message" style="padding: 12px;"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat jabatan</p></div>';
+    console.error('Error loadJabatan:', e);
+    unitBody.innerHTML = '<div class="no-data-message" style="padding: 12px;"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat</p></div>';
     unitBody.dataset.loaded = '0';
   }
 }
 
-function renderJabatanIntoUnitBody(unitBody, jabatans, infoHtml = '') {
-  if (!jabatans || jabatans.length === 0) {
+function renderJabatan(unitBody, grouped) {
+  if (!grouped || Object.keys(grouped).length === 0) {
     unitBody.innerHTML = '<div class="no-data-message" style="padding: 12px;"><i class="fas fa-inbox"></i><p>Belum ada Jabatan</p></div>';
     unitBody.dataset.loaded = '1';
     return;
   }
 
-  let html = infoHtml + '<div class="jabatan-list">';
-  jabatans.forEach((jab) => {
-    const gap = (jab.b || 0) - (jab.k || 0);
-    const gapClass = gap > 0 ? 'badge-gap-pos' : (gap < 0 ? 'badge-gap-neg' : 'badge-gap-zero');
-    html += `
-      <div class="jabatan-row">
-        <div class="jabatan-kode">${escapeHtml(jab.kode)}</div>
-        <div class="jabatan-nama" title="${escapeHtml(jab.nama)}">${escapeHtml(jab.nama)}</div>
-        <div class="jabatan-stats">
-          <span class="stat-badge badge-b">B:${jab.b || 0}</span>
-          <span class="stat-badge badge-k">K:${jab.k || 0}</span>
-          <span class="stat-badge ${gapClass}">${gap > 0 ? '+' : ''}${gap}</span>
+  let html = '<div class="jabatan-list">';
+  
+  // Iterate over grouped jabatan by unit code
+  Object.keys(grouped).sort().forEach(unitCode => {
+    const jabatans = grouped[unitCode];
+    
+    jabatans.forEach((jab) => {
+      const gap = (jab.b || 0) - (jab.k || 0);
+      const gapClass = gap > 0 ? 'badge-gap-pos' : (gap < 0 ? 'badge-gap-neg' : 'badge-gap-zero');
+      html += `
+        <div class="jabatan-row">
+          <div class="jabatan-kode">${escapeHtml(jab.kode)}</div>
+          <div class="jabatan-nama">${escapeHtml(jab.nama)}</div>
+          <div class="jabatan-stats">
+            <span class="stat-badge badge-b">B:${jab.b || 0}</span>
+            <span class="stat-badge badge-k">K:${jab.k || 0}</span>
+            <span class="stat-badge ${gapClass}">${gap > 0 ? '+' : ''}${gap}</span>
+          </div>
+          <div class="jabatan-actions">
+            <a href="${jabatanBaseUrl}/${jab.id}/edit" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>
+            <button class="btn-action btn-delete" onclick="confirmDelete(${jab.id})"><i class="fas fa-trash"></i></button>
+          </div>
         </div>
-        <div class="jabatan-actions">
-          <a href="${jabatanBaseUrl}/${jab.id}/edit" class="btn-action btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
-          <button class="btn-action btn-delete" onclick="confirmDelete(${jab.id})" title="Hapus"><i class="fas fa-trash"></i></button>
-        </div>
-      </div>
-    `;
+      `;
+    });
   });
+  
   html += '</div>';
 
   unitBody.innerHTML = html;
@@ -768,13 +639,13 @@ async function serverSearch(query) {
   if (isSearching || query.trim().length === 0) return;
   
   const normalView = document.getElementById('normalView');
-  const searchResultsView = document.getElementById('searchResultsView');
-  if (!normalView || !searchResultsView) return;
+  const searchResults = document.getElementById('searchResults');
+  if (!normalView || !searchResults) return;
   
   isSearching = true;
   normalView.style.display = 'none';
-  searchResultsView.classList.add('show');
-  searchResultsView.innerHTML = '<div class="loading-spinner" style="padding: 40px;"><i class="fas fa-spinner fa-spin"></i></div>';
+  searchResults.classList.add('show');
+  searchResults.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0b58a6;"></i></div>';
 
   try {
     const url = `${searchUrl}?q=${encodeURIComponent(query)}`;
@@ -783,65 +654,96 @@ async function serverSearch(query) {
       credentials: 'same-origin' 
     });
     if (!res.ok) {
-      searchResultsView.innerHTML = `<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>`;
+      searchResults.innerHTML = `<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>`;
       isSearching = false;
       return;
     }
     const json = await res.json();
-    renderSearchResults(searchResultsView, json.data || {});
+    renderSearchResults(searchResults, json.data || []);
     isSearching = false;
   } catch (e) {
     console.error('Error serverSearch:', e);
-    searchResultsView.innerHTML = '<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>';
+    searchResults.innerHTML = '<div class="no-data-message"><i class="fas fa-exclamation-circle"></i><p>Gagal melakukan pencarian</p></div>';
     isSearching = false;
   }
 }
 
-function renderSearchResults(container, data) {
-  if (Object.keys(data).length === 0) {
+function renderSearchResults(container, jabatans) {
+  if (!jabatans || jabatans.length === 0) {
     container.innerHTML = '<div class="no-data-message"><i class="fas fa-search"></i><p>Tidak ada hasil yang sesuai</p></div>';
     return;
   }
 
+  // Group by PD -> Unit Name
+  const grouped = {};
+  jabatans.forEach(jab => {
+    const pdName = jab._pd_name || 'Unknown';
+    const unitName = jab._unit_name || 'Unknown';
+    if (!grouped[pdName]) grouped[pdName] = {};
+    if (!grouped[pdName][unitName]) grouped[pdName][unitName] = [];
+    grouped[pdName][unitName].push(jab);
+  });
+
   let html = '';
-  Object.keys(data).forEach(pdName => {
-    const units = data[pdName];
-    html += `<div style="margin-bottom: 12px;">
-              <div style="padding: 10px 12px; background: #f8f9fa; border: 1px solid #e8eaed; border-radius: 6px 6px 0 0;">
-                <i class="fas fa-building" style="color: #0b58a6; margin-right: 8px;"></i><strong>${escapeHtml(pdName)}</strong>
-              </div>`;
+  Object.keys(grouped).forEach(pdName => {
+    const units = grouped[pdName];
+    html += `<div class="pd-group">
+      <div class="pd-header-search">
+        <div><i class="fas fa-building" style="color: #0b58a6; margin-right: 8px;"></i><strong>${escapeHtml(pdName)}</strong></div>
+      </div>`;
 
     Object.keys(units).forEach(unitName => {
       const jabatanList = units[unitName];
-      html += `<div style="padding: 8px 12px; background: #fafbfc; border-bottom: 1px solid #f0f0f0; font-weight: 500; font-size: 12px;">
-                ${escapeHtml(unitName)} (${jabatanList.length} Posisi)
-              </div>`;
+      html += `<div style="padding: 8px 12px; background: #fafbfc; border-bottom: 1px solid #f0f0f0; font-weight: 500; font-size: 12px; border-left: 3px solid #e3f2fd;">
+        ${escapeHtml(unitName)} (${jabatanList.length} Posisi)
+      </div>`;
 
-      jabatanList.forEach((jab) => {
+      html += '<div class="pd-results">';
+      jabatanList.forEach((jab, idx) => {
         const gap = (jab.b || 0) - (jab.k || 0);
         const gapClass = gap > 0 ? 'badge-gap-pos' : (gap < 0 ? 'badge-gap-neg' : 'badge-gap-zero');
+        const hidden = idx >= SHOW_FIRST ? 'style="display:none;" data-hidden="1"' : '';
         html += `
-          <div class="jabatan-row" style="padding: 8px 12px; background: #fff; border-bottom: 1px solid #f0f0f0;">
+          <div class="jabatan-row" ${hidden}>
             <div class="jabatan-kode">${escapeHtml(jab.kode)}</div>
-            <div class="jabatan-nama" title="${escapeHtml(jab.nama)}">${escapeHtml(jab.nama)}</div>
+            <div class="jabatan-nama">${escapeHtml(jab.nama)}</div>
             <div class="jabatan-stats">
               <span class="stat-badge badge-b">B:${jab.b || 0}</span>
               <span class="stat-badge badge-k">K:${jab.k || 0}</span>
               <span class="stat-badge ${gapClass}">${gap > 0 ? '+' : ''}${gap}</span>
             </div>
             <div class="jabatan-actions">
-              <a href="${jabatanBaseUrl}/${jab.id}/edit" class="btn-action btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
-              <button class="btn-action btn-delete" onclick="confirmDelete(${jab.id})" title="Hapus"><i class="fas fa-trash"></i></button>
+              <a href="${jabatanBaseUrl}/${jab.id}/edit" class="btn-action btn-edit"><i class="fas fa-edit"></i></a>
+              <button class="btn-action btn-delete" onclick="confirmDelete(${jab.id})"><i class="fas fa-trash"></i></button>
             </div>
           </div>
         `;
       });
+
+      if (jabatanList.length > SHOW_FIRST) {
+        html += `<div style="text-align: center; padding: 12px;">
+          <button class="show-more-btn" onclick="expandResults(this)">
+            <i class="fas fa-chevron-down"></i> Tampilkan semua (${jabatanList.length})
+          </button>
+        </div>`;
+      }
+      html += '</div>';
     });
 
-    html += `</div>`;
+    html += '</div>';
   });
 
   container.innerHTML = html;
+}
+
+function expandResults(btn) {
+  const parent = btn.closest('.pd-results') || btn.closest('.pd-group');
+  if (!parent) return;
+  parent.querySelectorAll('[data-hidden="1"]').forEach(el => {
+    el.style.display = '';
+    el.removeAttribute('data-hidden');
+  });
+  btn.style.display = 'none';
 }
 
 function clearSearch() {
@@ -853,17 +755,17 @@ function clearSearch() {
   isSearching = false;
   
   const normalView = document.getElementById('normalView');
-  const searchResultsView = document.getElementById('searchResultsView');
+  const searchResults = document.getElementById('searchResults');
   
-  if (normalView && searchResultsView) {
+  if (normalView && searchResults) {
     normalView.style.display = 'block';
-    searchResultsView.classList.remove('show');
-    searchResultsView.innerHTML = '';
+    searchResults.classList.remove('show');
+    searchResults.innerHTML = '';
   }
 }
 
-async function confirmDelete(id) {
-  if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+function confirmDelete(id) {
+  if (confirm('Yakin ingin menghapus jabatan ini?')) {
     const form = document.getElementById('deleteForm');
     form.action = '{{ route("jabatan.destroy", ":id") }}'.replace(':id', id);
     form.submit();
