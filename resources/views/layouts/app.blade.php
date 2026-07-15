@@ -188,12 +188,6 @@
                 </div>
 
                 <div class="nav-label mt-3">MASTER DATA</div>
-                <a href="{{ route('perangkat_daerah.index') }}" class="nav-link @if(Request::routeIs('perangkat_daerah.*')) active @endif">
-                    <i class="fas fa-building"></i> <span>Perangkat Daerah</span>
-                </a>
-                <a href="{{ route('unit_organisasi.index') }}" class="nav-link @if(Request::routeIs('unit_organisasi.*')) active @endif">
-                    <i class="fas fa-sitemap"></i> <span>Unit Organisasi</span>
-                </a>
                 <a href="{{ route('jabatan.index') }}" class="nav-link @if(Request::routeIs('jabatan.*')) active @endif">
                     <i class="fas fa-briefcase"></i> <span>Jabatan</span>
                 </a>

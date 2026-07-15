@@ -13,7 +13,7 @@ use App\Http\Controllers\OrgChartController;
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect('/perangkat_daerah');
+        return redirect('/jabatan');
     }
     return redirect('/login');
 });
@@ -33,12 +33,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Perangkat Daerah
-    Route::resource('perangkat_daerah', PerangkatDaerahController::class);
+    // Route::resource('perangkat_daerah', PerangkatDaerahController::class);
 
     // Unit Organisasi - IMPORTANT: search route BEFORE resource route
-    Route::get('unit_organisasi/search', [UnitOrganisasiController::class, 'search'])->name('unit_organisasi.search');
-    Route::get('perangkat_daerah/{id}/units', [UnitOrganisasiController::class, 'units'])->name('perangkat_daerah.units');
-    Route::resource('unit_organisasi', UnitOrganisasiController::class);
+    // Route::get('unit_organisasi/search', [UnitOrganisasiController::class, 'search'])->name('unit_organisasi.search');
+    // Route::get('perangkat_daerah/{id}/units', [UnitOrganisasiController::class, 'units'])->name('perangkat_daerah.units');
+    // Route::resource('unit_organisasi', UnitOrganisasiController::class);
 
     // Jabatan - IMPORTANT: search route BEFORE resource route
     Route::get('perangkat_daerah/{id}/jabatan', [JabatanController::class, 'getJabatanByPerangkat'])->name('jabatan.getByPerangkat');
