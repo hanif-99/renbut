@@ -133,9 +133,35 @@
 
   .pd-details.open { display: block; }
 
-  /* UNIT HEADER - NO CODE HERE */
-  .unit-list { display: flex; flex-direction: column; }
+  /* UNIT TREE STRUCTURE */
+  .unit-list { 
+    display: flex; 
+    flex-direction: column;
+    padding: 12px 0;
+  }
 
+  /* UNIT NODE - TREE CONNECTOR */
+  .unit-node {
+    position: relative;
+    margin-left: 80px;
+  }
+
+  .unit-node::before {
+    content: '';
+    position: absolute;
+    left: -40px;
+    top: 0;
+    width: 36px;
+    height: 100%;
+    border-left: 1px solid #81c3d7;
+    border-bottom: 1px solid #81c3d7;
+  }
+
+  .unit-node:last-child::before {
+    height: 26px;
+  }
+
+  /* UNIT HEADER WITH TREE LINE */
   .unit-header {
     padding: 10px 12px;
     background-color: #fafbfc;
@@ -148,10 +174,14 @@
     align-items: center;
     transition: background-color 0.12s ease;
     user-select: none;
-    border-bottom: 1px solid #f0f0f0;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    margin-left: 8px;
   }
 
-  .unit-header:hover { background-color: #f0f2f5; }
+  .unit-header:hover { 
+    background-color: #f0f2f5; 
+  }
 
   .unit-header-title {
     display: flex;
@@ -162,7 +192,7 @@
   }
 
   .unit-header-title .icon {
-    font-size: 12px;
+    font-size: 13px;
     color: #0b58a6;
     flex-shrink: 0;
   }
@@ -174,15 +204,21 @@
     flex: 1;
   }
 
+  .unit-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
   .unit-badge {
     background: #e8f5e9;
-    color: #2e7d32;
-    padding: 2px 6px;
+    color: #5ebd63;
+    padding: 3px 8px;
     border-radius: 3px;
     font-size: 11px;
     font-weight: 500;
     flex-shrink: 0;
-    margin-left: 8px;
   }
 
   .unit-toggle {
@@ -192,41 +228,67 @@
     width: 18px;
     height: 18px;
     color: #666;
-    font-size: 10px;
+    font-size: 11px;
     transform: rotate(-90deg);
     transition: transform 0.12s ease;
     flex-shrink: 0;
-    margin-left: 8px;
   }
 
-  .unit-header.expanded .unit-toggle { transform: rotate(0deg); }
+  .unit-header.expanded .unit-toggle { 
+    transform: rotate(0deg); 
+  }
 
+  /* JABATAN CONTAINER */
   .unit-body {
     display: none;
-    padding: 0;
-    background-color: #fff;
+    padding: 8px 0;
+    background-color: transparent;
   }
 
-  .unit-body.expanded { display: block; }
+  .unit-body.expanded { 
+    display: block; 
+  }
 
-  /* JABATAN ROW - CODE HERE */
+  /* JABATAN ROW - TREE STRUCTURE */
   .jabatan-list { 
     display: flex;
     flex-direction: column;
-    padding: 0 12px;
+    padding: 0;
+  }
+
+  .jabatan-item {
+    position: relative;
+    margin-left: 55px;
+  }
+
+  .jabatan-item::before {
+    content: '';
+    position: absolute;
+    left: -46px;
+    top: 11px;
+    width: 46px;
+    height: 1px;
+    background: #81d4e6;
   }
 
   .jabatan-row { 
     display: grid; 
-    grid-template-columns: 70px 1fr 100px auto;
+    grid-template-columns: 60px 1fr 110px auto;
     gap: 12px; 
     align-items: center; 
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 8px 12px;
+    border-radius: 4px;
     font-size: 12px;
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    transition: all 0.12s ease;
+    margin-bottom: 4px;
   }
 
-  .jabatan-row:last-child { border-bottom: none; }
+  .jabatan-row:hover {
+    background: #f8f9fa;
+    border-color: #e0e0e0;
+  }
 
   .jabatan-kode { 
     background: #eaf6ff;
@@ -236,7 +298,7 @@
     font-weight: 600; 
     font-size: 11px; 
     text-align: center;
-    min-width: 60px;
+    min-width: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -249,6 +311,7 @@
     font-size: 12px;
     line-height: 1.3;
     word-break: break-word;
+    padding-right: 8px;
   }
 
   .jabatan-stats {
@@ -262,7 +325,7 @@
     border-radius: 3px;
     font-size: 11px;
     font-weight: 600;
-    min-width: 35px;
+    min-width: 38px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -278,7 +341,7 @@
 
   .jabatan-actions { 
     display: flex; 
-    gap: 6px; 
+    gap: 4px; 
     justify-content: flex-end;
   }
 
@@ -342,6 +405,10 @@
   @media (max-width: 768px) {
     .jabatan-row { grid-template-columns: 1fr; gap: 8px; }
     .jabatan-actions { justify-content: flex-start; }
+    .unit-node { margin-left: 30px; }
+    .unit-node::before { left: -21px; width: 21px; }
+    .jabatan-item { margin-left: 40px; }
+    .jabatan-item::before { left: -31px; width: 31px; }
   }
 </style>
 @endsection
@@ -522,20 +589,24 @@ function renderUnits(detailsElement, units) {
   }
 
   let html = '<div class="unit-list">';
-  units.forEach((unit) => {
+  units.forEach((unit, idx) => {
     const unitBodyId = `unit-body-${unit.id}`;
+    const isLast = idx === units.length - 1 ? 'true' : 'false';
+    
     html += `
-      <div class="unit-header" onclick="toggleUnit(event, ${unit.id})">
-        <div class="unit-header-title">
-          <i class="icon fas fa-folder"></i>
-          <span class="name">${escapeHtml(unit.nama)}</span>
+      <div class="unit-node" data-is-last="${isLast}">
+        <div class="unit-header" onclick="toggleUnit(event, ${unit.id})">
+          <div class="unit-header-title">
+            <i class="icon fas fa-folder"></i>
+            <span class="name">${escapeHtml(unit.nama)}</span>
+          </div>
+          <div class="unit-header-right">
+            <span class="unit-badge">${unit.jabatan_count} Jabatan</span>
+            <span class="unit-toggle"><i class="fas fa-chevron-down"></i></span>
+          </div>
         </div>
-        <div>
-          <span class="unit-badge">${unit.jabatan_count} Jabatan</span>
-          <span class="unit-toggle"><i class="fas fa-chevron-down"></i></span>
-        </div>
+        <div class="unit-body" id="${unitBodyId}" data-loaded="0"></div>
       </div>
-      <div class="unit-body" id="${unitBodyId}" data-loaded="0"></div>
     `;
   });
   html += '</div>';
@@ -605,13 +676,19 @@ function renderJabatan(unitBody, grouped) {
   let html = '<div class="jabatan-list">';
   
   // Iterate over grouped jabatan by unit code
+  const jabatanArray = [];
   Object.keys(grouped).sort().forEach(unitCode => {
     const jabatans = grouped[unitCode];
+    jabatans.forEach(jab => jabatanArray.push(jab));
+  });
+
+  jabatanArray.forEach((jab, idx) => {
+    const gap = (jab.b || 0) - (jab.k || 0);
+    const gapClass = gap > 0 ? 'badge-gap-pos' : (gap < 0 ? 'badge-gap-neg' : 'badge-gap-zero');
+    const isLast = idx === jabatanArray.length - 1 ? 'true' : 'false';
     
-    jabatans.forEach((jab) => {
-      const gap = (jab.b || 0) - (jab.k || 0);
-      const gapClass = gap > 0 ? 'badge-gap-pos' : (gap < 0 ? 'badge-gap-neg' : 'badge-gap-zero');
-      html += `
+    html += `
+      <div class="jabatan-item" data-is-last="${isLast}">
         <div class="jabatan-row">
           <div class="jabatan-kode">${escapeHtml(jab.kode)}</div>
           <div class="jabatan-nama">${escapeHtml(jab.nama)}</div>
@@ -625,8 +702,8 @@ function renderJabatan(unitBody, grouped) {
             <button class="btn-action btn-delete" onclick="confirmDelete(${jab.id})"><i class="fas fa-trash"></i></button>
           </div>
         </div>
-      `;
-    });
+      </div>
+    `;
   });
   
   html += '</div>';
