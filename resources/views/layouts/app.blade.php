@@ -203,11 +203,11 @@
                 </a>
 
                 <div class="nav-label mt-3">LAPORAN</div>
+                <a href="{{ route('laporan.gap-analysis') }}" class="nav-link @if(Request::routeIs('laporan.gap-analysis')) active @endif">
+                    <i class="fas fa-chart-line"></i> <span>Analisis</span>
+                </a>
                 <a href="{{ route('laporan.summary') }}" class="nav-link @if(Request::routeIs('laporan.summary')) active @endif">
                     <i class="fas fa-file-alt"></i> <span>Ringkasan</span>
-                </a>
-                <a href="{{ route('laporan.gap-analysis') }}" class="nav-link @if(Request::routeIs('laporan.gap-analysis')) active @endif">
-                    <i class="fas fa-chart-line"></i> <span>Gap Analysis</span>
                 </a>
             </div>
 

@@ -41,16 +41,49 @@ class LaporanController extends Controller
 
     public function gapAnalysis(): View
     {
-        // ambil jabatan dengan relasi
+        // Get per_page parameter, default 10
+        $perPage = request()->get('per_page', 10);
+        // Validate per_page value
+        $perPage = in_array($perPage, [10, 25, 50, 100]) ? $perPage : 10;
+
+        $page = request()->get('page', 1);
+        $skip = ($page - 1) * $perPage;
+
+        // Get total count
+        $totalCount = Jabatan::count();
+        $totalPages = ceil($totalCount / $perPage);
+
+        // Validate page
+        if ($page < 1 || $page > $totalPages) {
+            $page = 1;
+        }
+
+        // Get paginated data
         $jabatan = Jabatan::with('unitOrganisasi.perangkatDaerah')
+            ->skip($skip)
+            ->take($perPage)
             ->get()
             ->map(function ($j) {
-                // tetap set gap agar view konsisten (gap = B - K)
                 $j->gap = ((int) $j->b) - ((int) $j->k);
                 return $j;
             });
 
-        return view('laporan.gap-analysis', compact('jabatan'));
+        // Get all data for summary stats
+        $jabatanAll = Jabatan::with('unitOrganisasi.perangkatDaerah')
+            ->get()
+            ->map(function ($j) {
+                $j->gap = ((int) $j->b) - ((int) $j->k);
+                return $j;
+            });
+
+        return view('laporan.gap-analysis', compact(
+            'jabatan',
+            'jabatanAll',
+            'page',
+            'totalPages',
+            'perPage',
+            'totalCount'
+        ));
     }
 
     public function exportExcel()
