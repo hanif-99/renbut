@@ -40,7 +40,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('perangkat_daerah/{id}/units', [UnitOrganisasiController::class, 'units'])->name('perangkat_daerah.units');
     // Route::resource('unit_organisasi', UnitOrganisasiController::class);
 
-    // Jabatan - IMPORTANT: search route BEFORE resource route
+    // Jabatan Routes dengan Unit Hierarchy
+    Route::get('perangkat_daerah/{id}/units', [JabatanController::class, 'getUnitsByPerangkat'])->name('jabatan.getUnits');
+    Route::get('unit_organisasi/{id}/jabatan-list', [JabatanController::class, 'getJabatanByUnit'])->name('jabatan.getByUnitJson');
     Route::get('perangkat_daerah/{id}/jabatan', [JabatanController::class, 'getJabatanByPerangkat'])->name('jabatan.getByPerangkat');
     Route::get('jabatan/search', [JabatanController::class, 'search'])->name('jabatan.search');
     Route::resource('jabatan', JabatanController::class);

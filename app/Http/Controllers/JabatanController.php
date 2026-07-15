@@ -21,7 +21,7 @@ class JabatanController extends Controller
     }
 
     /**
-     * Display listing of Perangkat Daerah dengan jabatan count
+     * Display listing of Perangkat Daerah dengan unit count
      */
     public function index(): View
     {
@@ -29,9 +29,10 @@ class JabatanController extends Controller
             $query->orderBy('kode', 'asc');
         }])->orderBy('nama', 'asc')->get();
 
-        // Hitung jabatan per perangkat
+        // Hitung unit & jabatan per perangkat
         foreach ($perangkatDaerah as $pd) {
             $unitIds = $pd->unitOrganisasi->pluck('id')->toArray();
+            $pd->unit_count = $pd->unitOrganisasi->count();
             $pd->jabatan_count = Jabatan::whereIn('unit_organisasi_id', $unitIds)->count();
         }
 
@@ -39,7 +40,108 @@ class JabatanController extends Controller
     }
 
     /**
-     * API: Get jabatan untuk satu perangkat daerah
+     * UPDATED: API - Get Unit Organisasi untuk Perangkat (grouped if duplicates)
+     */
+    public function getUnitsByPerangkat(Request $request, $perangkatId): JsonResponse
+    {
+        try {
+            $units = UnitOrganisasi::where('perangkat_daerah_id', $perangkatId)
+                ->with('jabatan')
+                ->orderBy('kode', 'asc')
+                ->get();
+
+            // Group units by (kode + nama) untuk eliminate duplicates
+            $grouped = [];
+            
+            foreach ($units as $unit) {
+                $key = $unit->kode . '|' . $unit->nama; // Unique key
+                
+                if (!isset($grouped[$key])) {
+                    $grouped[$key] = [
+                        'id' => $unit->id,
+                        'kode' => $unit->kode,
+                        'nama' => $unit->nama,
+                        'level' => $this->getCodeLevel($unit->kode),
+                        'parent_id' => $unit->unor_atasan,
+                        'unit_ids' => [$unit->id], // Track all unit IDs dengan kode+nama sama
+                        'jabatan_count' => 0,
+                    ];
+                } else {
+                    // Tambah unit ID ke daftar
+                    $grouped[$key]['unit_ids'][] = $unit->id;
+                }
+            }
+
+            // Hitung total jabatan dari semua unit yang sama
+            foreach ($grouped as $key => $unitData) {
+                $jabatanCount = Jabatan::whereIn('unit_organisasi_id', $unitData['unit_ids'])
+                    ->count();
+                $grouped[$key]['jabatan_count'] = $jabatanCount;
+                // Hitung jumlah unit yang sama (duplicates)
+                $grouped[$key]['duplicate_count'] = count($unitData['unit_ids']);
+            }
+
+            // Convert to array dengan index
+            $organized = array_values($grouped);
+
+            return response()->json([
+                'success' => true,
+                'data' => $organized,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Get units by perangkat error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat data unit',
+                'data' => []
+            ], 500);
+        }
+    }
+
+    /**
+     * UPDATED: API - Get Jabatan untuk Unit (menangani multiple duplicates)
+     */
+    public function getJabatanByUnit(Request $request, $unitId): JsonResponse
+    {
+        try {
+            // Ambil unit awal
+            $unit = UnitOrganisasi::find($unitId);
+            if (!$unit) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unit tidak ditemukan',
+                ], 404);
+            }
+
+            // Cari semua unit dengan kode + nama yang sama
+            $duplicateUnits = UnitOrganisasi::where('kode', $unit->kode)
+                ->where('nama', $unit->nama)
+                ->pluck('id')
+                ->toArray();
+
+            // Ambil semua jabatan dari semua unit yang sama
+            $jabatan = Jabatan::whereIn('unit_organisasi_id', $duplicateUnits)
+                ->orderBy('kode', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'unit_nama' => $unit->nama,
+                'unit_kode' => $unit->kode,
+                'duplicate_count' => count($duplicateUnits),
+                'data' => $jabatan->toArray(),
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Get jabatan by unit error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat data jabatan',
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Get jabatan untuk satu perangkat daerah (DEPRECATED - kept for backward compatibility)
      */
     public function getJabatanByPerangkat(Request $request, $perangkatId): JsonResponse
     {

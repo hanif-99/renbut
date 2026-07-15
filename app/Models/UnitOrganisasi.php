@@ -23,4 +23,29 @@ class UnitOrganisasi extends Model
     {
         return $this->hasMany(Jabatan::class);
     }
+
+    /**
+     * BARU: Relasi ke unit induk (parent)
+     */
+    public function parentUnit(): BelongsTo
+    {
+        return $this->belongsTo(UnitOrganisasi::class, 'unor_atasan', 'id');
+    }
+
+    /**
+     * BARU: Relasi ke unit anak (children)
+     */
+    public function childUnits(): HasMany
+    {
+        return $this->hasMany(UnitOrganisasi::class, 'unor_atasan', 'id');
+    }
+
+    /**
+     * BARU: Helper untuk hitung level berdasarkan kode (dot notation)
+     */
+    public function getCodeLevel(): int
+    {
+        if (!$this->kode) return 0;
+        return count(array_filter(explode('.', trim($this->kode))));
+    }
 }
