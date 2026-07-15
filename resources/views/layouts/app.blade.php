@@ -209,9 +209,6 @@
                 <a href="{{ route('laporan.gap-analysis') }}" class="nav-link @if(Request::routeIs('laporan.gap-analysis')) active @endif">
                     <i class="fas fa-chart-line"></i> <span>Gap Analysis</span>
                 </a>
-                <a href="{{ route('organogram.index') }}" class="nav-link @if(Request::routeIs('organogram.*')) active @endif">
-                    <i class="fas fa-sitemap"></i> <span>Peta Jabatan</span>
-                </a>
             </div>
 
             <!-- Main Content -->

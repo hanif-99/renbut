@@ -7,9 +7,7 @@ use App\Http\Controllers\UnitOrganisasiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\FormasiController;
 use App\Http\Controllers\LaporanController;
-use App\Http\Controllers\ImportController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\OrgChartController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -32,14 +30,6 @@ Route::middleware('auth')->group(function () {
 // Main Application Routes (Protected)
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Perangkat Daerah
-    // Route::resource('perangkat_daerah', PerangkatDaerahController::class);
-
-    // Unit Organisasi - IMPORTANT: search route BEFORE resource route
-    // Route::get('unit_organisasi/search', [UnitOrganisasiController::class, 'search'])->name('unit_organisasi.search');
-    // Route::get('perangkat_daerah/{id}/units', [UnitOrganisasiController::class, 'units'])->name('perangkat_daerah.units');
-    // Route::resource('unit_organisasi', UnitOrganisasiController::class);
-
     // Jabatan Routes dengan Unit Hierarchy
     Route::get('perangkat_daerah/{id}/units', [JabatanController::class, 'getUnitsByPerangkat'])->name('jabatan.getUnits');
     Route::get('unit_organisasi/{id}/jabatan-list', [JabatanController::class, 'getJabatanByUnit'])->name('jabatan.getByUnitJson');
@@ -60,8 +50,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Export Gap Analysis
     Route::get('/laporan/export-gap-excel', [LaporanController::class, 'exportGapExcel'])->name('laporan.export-gap-excel');
 
-    // Peta Jabatan (Protected - requires auth & verified)
-    Route::get('/organogram', [OrgChartController::class, 'index'])->name('organogram.index');
-    Route::get('/organogram/data', [OrgChartController::class, 'data'])->name('organogram.data');
-    Route::get('/organogram/detail/{id}', [OrgChartController::class, 'detail'])->name('organogram.detail');
 });

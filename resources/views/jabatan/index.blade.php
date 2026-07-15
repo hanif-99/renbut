@@ -409,6 +409,45 @@
   .card-header { background: linear-gradient(135deg, #0b2545 0%, #0b58a6 100%); }
   .card-header h5 { color: #fff; font-weight: 500; font-size: 16px; }
 
+  /* SHOW MORE BUTTON - Minimalis & Rapi */
+  .show-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 12px;
+    margin: 8px auto;
+    background: transparent;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #666;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .show-more-btn:hover {
+    background: #f5f5f5;
+    border-color: #0b58a6;
+    color: #0b58a6;
+  }
+
+  .show-more-btn:active {
+    background: #efefef;
+  }
+
+  .show-more-btn i {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+  }
+
+  .show-more-btn-container {
+    display: flex;
+    justify-content: center;
+    padding: 4px 12px;
+  }
+
   @media (max-width: 768px) {
     .jabatan-row { grid-template-columns: 1fr; gap: 8px; }
     .jabatan-actions { justify-content: flex-start; }
@@ -804,7 +843,7 @@ function renderSearchResults(container, jabatans) {
       });
 
       if (jabatanList.length > SHOW_FIRST) {
-        html += `<div style="text-align: center; padding: 5px;">
+        html += `<div class="show-more-btn-container">
           <button class="show-more-btn" onclick="expandResults(this)">
             <i class="fas fa-chevron-down"></i> Tampilkan semua (${jabatanList.length})
           </button>
