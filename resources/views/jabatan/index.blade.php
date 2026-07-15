@@ -804,7 +804,7 @@ function renderSearchResults(container, jabatans) {
       });
 
       if (jabatanList.length > SHOW_FIRST) {
-        html += `<div style="text-align: center; padding: 12px;">
+        html += `<div style="text-align: center; padding: 5px;">
           <button class="show-more-btn" onclick="expandResults(this)">
             <i class="fas fa-chevron-down"></i> Tampilkan semua (${jabatanList.length})
           </button>

@@ -170,7 +170,9 @@ class JabatanController extends Controller
     }
 
     /**
-     * API: Search jabatan (GROUP BY UNIT NAMA)
+     * API: Search jabatan & unit organisasi
+     * Jika query cocok dengan nama unit, tampilkan semua jabatan dari unit itu
+     * Jika query cocok dengan jabatan, tampilkan hanya jabatan yang cocok
      */
     public function search(Request $request): JsonResponse
     {
@@ -189,7 +191,32 @@ class JabatanController extends Controller
                 ]);
             }
 
-            $jabatans = Jabatan::with(['unitOrganisasi.perangkatDaerah'])
+            // Cari unit organisasi yang cocok dengan query
+            $matchingUnits = UnitOrganisasi::where('nama', 'like', '%' . $q . '%')
+                ->get();
+
+            $jabatans = collect();
+
+            // Jika ditemukan unit yang cocok, ambil semua jabatan dari unit tersebut
+            if ($matchingUnits->count() > 0) {
+                foreach ($matchingUnits as $unit) {
+                    $unitIds = UnitOrganisasi::where('nama', $unit->nama)
+                        ->where('perangkat_daerah_id', $unit->perangkat_daerah_id)
+                        ->pluck('id')
+                        ->toArray();
+
+                    $unitJabatans = Jabatan::with(['unitOrganisasi.perangkatDaerah'])
+                        ->whereIn('unit_organisasi_id', $unitIds)
+                        ->orderBy('jabatan.kode', 'asc')
+                        ->get();
+
+                    $jabatans = $jabatans->merge($unitJabatans);
+                }
+            }
+
+            // Tambahkan jabatan yang cocok dengan query (nama atau kode)
+            // tapi tidak termasuk dalam unit yang sudah dicari
+            $additionalJabatans = Jabatan::with(['unitOrganisasi.perangkatDaerah'])
                 ->where(function ($query) use ($q) {
                     $query->where('jabatan.nama', 'like', '%' . $q . '%')
                           ->orWhere('jabatan.kode', 'like', '%' . $q . '%');
@@ -197,10 +224,13 @@ class JabatanController extends Controller
                 ->orderBy('jabatan.kode', 'asc')
                 ->get();
 
+            // Gabungkan hasil, hindari duplikat
+            $allJabatans = $jabatans->merge($additionalJabatans)->unique('id')->values();
+
             $page = (int) $request->query('page', 1);
-            $total = $jabatans->count();
+            $total = $allJabatans->count();
             $lastPage = ceil($total / $perPage) ?: 1;
-            $items = $jabatans->slice(($page - 1) * $perPage, $perPage)->values();
+            $items = $allJabatans->slice(($page - 1) * $perPage, $perPage)->values();
 
             $items->each(function ($jab) {
                 $jab->_pd_name = $jab->unitOrganisasi->perangkatDaerah->nama ?? 'Unknown';
