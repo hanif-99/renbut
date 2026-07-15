@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
         // Update last login
         auth()->user()->update(['last_login' => now()]);
 
-        return redirect()->intended('/dashboard');
+        return redirect()->intended('/perangkat_daerah');
     }
 
     public function destroy(Request $request): RedirectResponse

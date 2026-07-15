@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PerangkatDaerahController;
 use App\Http\Controllers\UnitOrganisasiController;
 use App\Http\Controllers\JabatanController;
@@ -14,7 +13,7 @@ use App\Http\Controllers\OrgChartController;
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect('/dashboard');
+        return redirect('/perangkat_daerah');
     }
     return redirect('/login');
 });
@@ -32,8 +31,6 @@ Route::middleware('auth')->group(function () {
 
 // Main Application Routes (Protected)
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Perangkat Daerah
     Route::resource('perangkat_daerah', PerangkatDaerahController::class);

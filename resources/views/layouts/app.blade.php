@@ -187,11 +187,6 @@
                     BKPSDM CIANJUR
                 </div>
 
-                <div class="nav-label">MENU UTAMA</div>
-                <a href="{{ route('dashboard') }}" class="nav-link @if(Request::routeIs('dashboard')) active @endif">
-                    <i class="fas fa-home"></i> <span>Dashboard</span>
-                </a>
-
                 <div class="nav-label mt-3">MASTER DATA</div>
                 <a href="{{ route('perangkat_daerah.index') }}" class="nav-link @if(Request::routeIs('perangkat_daerah.*')) active @endif">
                     <i class="fas fa-building"></i> <span>Perangkat Daerah</span>
