@@ -143,7 +143,7 @@
   /* UNIT NODE - TREE CONNECTOR */
   .unit-node {
     position: relative;
-    margin-left: 80px;
+    margin-left: 50px;
   }
 
   .unit-node::before {
@@ -151,7 +151,7 @@
     position: absolute;
     left: -40px;
     top: 0;
-    width: 36px;
+    width: 40px;
     height: 100%;
     border-left: 1px solid #81c3d7;
     border-bottom: 1px solid #81c3d7;
@@ -213,7 +213,7 @@
 
   .unit-badge {
     background: #e8f5e9;
-    color: #5ebd63;
+    color: #2e7d32;
     padding: 3px 8px;
     border-radius: 3px;
     font-size: 11px;
@@ -258,17 +258,23 @@
 
   .jabatan-item {
     position: relative;
-    margin-left: 55px;
+    margin-left: 50px;
   }
 
+  /* Vertical line for jabatan items (left connector) - garis vertikal */
   .jabatan-item::before {
     content: '';
     position: absolute;
-    left: -46px;
-    top: 11px;
-    width: 46px;
-    height: 1px;
-    background: #81d4e6;
+    left: -40px;
+    top: 0;
+    width: 40px;
+    height: 100%;
+    border-left: 1px solid #66bb6a;
+    border-bottom: 1px solid #66bb6a;
+  }
+
+  .jabatan-item:last-child::before {
+    height: 26px;
   }
 
   .jabatan-row { 
@@ -283,6 +289,7 @@
     border: 1px solid #f0f0f0;
     transition: all 0.12s ease;
     margin-bottom: 4px;
+    margin-left: 8px;
   }
 
   .jabatan-row:hover {
@@ -405,10 +412,10 @@
   @media (max-width: 768px) {
     .jabatan-row { grid-template-columns: 1fr; gap: 8px; }
     .jabatan-actions { justify-content: flex-start; }
-    .unit-node { margin-left: 30px; }
-    .unit-node::before { left: -21px; width: 21px; }
-    .jabatan-item { margin-left: 40px; }
-    .jabatan-item::before { left: -31px; width: 31px; }
+    .unit-node { margin-left: 35px; }
+    .unit-node::before { left: -25px; width: 25px; }
+    .jabatan-item { margin-left: 35px; }
+    .jabatan-item::before { left: -25px; width: 25px; }
   }
 </style>
 @endsection
@@ -685,10 +692,9 @@ function renderJabatan(unitBody, grouped) {
   jabatanArray.forEach((jab, idx) => {
     const gap = (jab.b || 0) - (jab.k || 0);
     const gapClass = gap > 0 ? 'badge-gap-pos' : (gap < 0 ? 'badge-gap-neg' : 'badge-gap-zero');
-    const isLast = idx === jabatanArray.length - 1 ? 'true' : 'false';
     
     html += `
-      <div class="jabatan-item" data-is-last="${isLast}">
+      <div class="jabatan-item">
         <div class="jabatan-row">
           <div class="jabatan-kode">${escapeHtml(jab.kode)}</div>
           <div class="jabatan-nama">${escapeHtml(jab.nama)}</div>
