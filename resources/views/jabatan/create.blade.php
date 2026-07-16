@@ -176,7 +176,7 @@ document.getElementById('perangkat_daerah_id').addEventListener('change', async 
             const data = json.data;
             let html = '<option value="">-- Pilih Unit Organisasi --</option>';
 
-            // Render by level
+            // Render by level - TANPA DUPLIKAT
             Object.keys(data).sort((a, b) => parseInt(a) - parseInt(b)).forEach(level => {
                 const units = data[level];
                 

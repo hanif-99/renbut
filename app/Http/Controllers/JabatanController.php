@@ -258,22 +258,37 @@ class JabatanController extends Controller
 
     /**
      * API: Get unit hierarchy for form (create/edit page)
-     * Return units grouped by level
+     * Return units grouped by NAMA (UNIQUE) - tidak ada duplikat
      */
     public function unitsHierarchy($perangkatId): JsonResponse
     {
         try {
             $units = UnitOrganisasi::where('perangkat_daerah_id', $perangkatId)
-                ->orderBy('kode', 'asc')
+                ->orderBy('nama', 'asc')
                 ->get();
 
-            // Group by level
-            $grouped = [];
+            // Group by NAMA untuk eliminate duplicates
+            $uniqueUnits = [];
+            $seenNames = [];
+            
             foreach ($units as $unit) {
+                // Skip jika nama sudah pernah dilihat sebelumnya
+                if (in_array($unit->nama, $seenNames)) {
+                    continue;
+                }
+                $seenNames[] = $unit->nama;
+                $uniqueUnits[] = $unit;
+            }
+
+            // Kemudian group by level
+            $grouped = [];
+            foreach ($uniqueUnits as $unit) {
                 $level = $this->getCodeLevel($unit->kode);
+                
                 if (!isset($grouped[$level])) {
                     $grouped[$level] = [];
                 }
+                
                 $grouped[$level][] = [
                     'id' => $unit->id,
                     'kode' => $unit->kode,
@@ -294,9 +309,11 @@ class JabatanController extends Controller
         }
     }
 
+    /**
+     * Show the form for creating a new Jabatan
+     */
     public function create(): View
     {
-        // FIXED: Tambahkan perangkatDaerah
         $perangkatDaerah = PerangkatDaerah::orderBy('nama')->get();
         $jenisJabatan = JenisJabatan::all();
         $jenjang = Jenjang::all();
@@ -304,6 +321,9 @@ class JabatanController extends Controller
         return view('jabatan.create', compact('perangkatDaerah', 'jenisJabatan', 'jenjang'));
     }
 
+    /**
+     * Store a newly created Jabatan in storage
+     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -323,9 +343,11 @@ class JabatanController extends Controller
             ->with('success', 'Jabatan berhasil ditambahkan');
     }
 
+    /**
+     * Show the form for editing the specified Jabatan
+     */
     public function edit(Jabatan $jabatan): View
     {
-        // FIXED: Tambahkan perangkatDaerah
         $perangkatDaerah = PerangkatDaerah::orderBy('nama')->get();
         $jenisJabatan = JenisJabatan::all();
         $jenjang = Jenjang::all();
@@ -333,6 +355,9 @@ class JabatanController extends Controller
         return view('jabatan.edit', compact('jabatan', 'perangkatDaerah', 'jenisJabatan', 'jenjang'));
     }
 
+    /**
+     * Update the specified Jabatan in storage
+     */
     public function update(Request $request, Jabatan $jabatan): RedirectResponse
     {
         $validated = $request->validate([
@@ -352,6 +377,9 @@ class JabatanController extends Controller
             ->with('success', 'Jabatan berhasil diperbarui');
     }
 
+    /**
+     * Remove the specified Jabatan from storage
+     */
     public function destroy(Jabatan $jabatan): RedirectResponse
     {
         $jabatan->delete();

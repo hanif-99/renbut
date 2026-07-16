@@ -195,8 +195,8 @@
     }
 
     .gap-positive {
-        background: #dcfce7;
-        color: #166534;
+        background: #8df1b3;
+        color: #205c37;
     }
 
     .gap-negative {
@@ -234,8 +234,8 @@
     }
 
     .status-kelebihan {
-        background: #fef3c7;
-        color: #b45309;
+        background: rgb(237, 65, 65);
+        color: #ffffff;
     }
 
     .pagination-wrapper {
