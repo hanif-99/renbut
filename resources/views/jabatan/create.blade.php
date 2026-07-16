@@ -57,7 +57,7 @@
                         @enderror
                     </div>
 
-                    <!-- BARU: Hierarchical Unit Selection -->
+                    <!-- Hierarchical Unit Selection -->
                     <div class="mb-3">
                         <label for="perangkat_daerah_id" class="form-label">PERANGKAT DAERAH <span class="text-danger">*</span></label>
                         <select class="form-select @error('perangkat_daerah_id') is-invalid @enderror" id="perangkat_daerah_id" required>
@@ -179,7 +179,6 @@ document.getElementById('perangkat_daerah_id').addEventListener('change', async 
             // Render by level
             Object.keys(data).sort((a, b) => parseInt(a) - parseInt(b)).forEach(level => {
                 const units = data[level];
-                const levelName = `Level ${level} - ${['Divisi', 'Subdiv', 'Seksi', 'Unit'][parseInt(level) - 1] || 'Unit'}`;
                 
                 units.forEach(unit => {
                     const indent = '— '.repeat(parseInt(level) - 1);

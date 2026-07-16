@@ -2,6 +2,34 @@
 
 @section('title', 'Edit Jabatan')
 
+@section('css')
+<style>
+  .form-group-hierarchical {
+    margin-bottom: 20px;
+  }
+
+  .unit-level-label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .unit-option-group {
+    margin-left: 12px;
+    padding-left: 12px;
+    border-left: 2px solid #e0e0e0;
+  }
+
+  .unit-option-group:nth-child(1) { border-left-color: #0b58a6; }
+  .unit-option-group:nth-child(2) { border-left-color: #1976d2; }
+  .unit-option-group:nth-child(3) { border-left-color: #42a5f5; }
+  .unit-option-group:nth-child(4) { border-left-color: #90caf9; }
+</style>
+@endsection
+
 @section('content')
 <div class="row">
     <div class="col-md-8 offset-md-2">
@@ -30,13 +58,24 @@
                         @enderror
                     </div>
 
+                    <!-- Hierarchical Unit Selection -->
                     <div class="mb-3">
+                        <label for="perangkat_daerah_id" class="form-label">PERANGKAT DAERAH <span class="text-danger">*</span></label>
+                        <select class="form-select @error('perangkat_daerah_id') is-invalid @enderror" id="perangkat_daerah_id" required>
+                            <option value="">-- Pilih Perangkat Daerah --</option>
+                            @foreach($perangkatDaerah as $pd)
+                                <option value="{{ $pd->id }}" @selected(old('perangkat_daerah_id', $jabatan->unitOrganisasi->perangkat_daerah_id ?? null) == $pd->id)>{{ $pd->nama }}</option>
+                            @endforeach
+                        </select>
+                        @error('perangkat_daerah_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group-hierarchical">
                         <label for="unit_organisasi_id" class="form-label">UNIT ORGANISASI <span class="text-danger">*</span></label>
                         <select class="form-select @error('unit_organisasi_id') is-invalid @enderror" id="unit_organisasi_id" name="unit_organisasi_id" required>
-                            <option value="">-- Pilih Unit Organisasi --</option>
-                            @foreach($unitOrganisasi as $item)
-                                <option value="{{ $item->id }}" @selected(old('unit_organisasi_id', $jabatan->unit_organisasi_id) == $item->id)>{{ $item->nama }}</option>
-                            @endforeach
+                            <option value="{{ $jabatan->unit_organisasi_id }}">{{ $jabatan->unitOrganisasi->nama ?? 'Memuat...' }}</option>
                         </select>
                         @error('unit_organisasi_id')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -80,7 +119,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="b" class="form-label">K (Kebutuhan) <span class="text-danger">*</span></label>
+                                <label for="b" class="form-label">B (Bezetting) <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control @error('b') is-invalid @enderror" id="b" name="b" value="{{ old('b', $jabatan->b) }}" min="0" required>
                                 @error('b')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -89,7 +128,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="k" class="form-label">B (Bezetting) <span class="text-danger">*</span></label>
+                                <label for="k" class="form-label">K (Kebutuhan) <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control @error('k') is-invalid @enderror" id="k" name="k" value="{{ old('k', $jabatan->k) }}" min="0" required>
                                 @error('k')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -111,4 +150,59 @@
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('js')
+<script>
+const getUnitsHierarchyUrl = "{{ route('jabatan.unitsHierarchy', ':id') }}";
+const currentUnitId = {{ $jabatan->unit_organisasi_id }};
+
+document.getElementById('perangkat_daerah_id').addEventListener('change', async function() {
+    const pdId = this.value;
+    const unitSelect = document.getElementById('unit_organisasi_id');
+    
+    unitSelect.innerHTML = '<option value="">-- Memuat Unit Organisasi --</option>';
+    
+    if (!pdId) {
+        unitSelect.innerHTML = '<option value="">-- Pilih Perangkat Daerah dulu --</option>';
+        return;
+    }
+
+    try {
+        const url = getUnitsHierarchyUrl.replace(':id', pdId);
+        const response = await fetch(url, { credentials: 'same-origin' });
+        const json = await response.json();
+
+        if (json.success) {
+            const data = json.data;
+            let html = '<option value="">-- Pilih Unit Organisasi --</option>';
+
+            // Render by level
+            Object.keys(data).sort((a, b) => parseInt(a) - parseInt(b)).forEach(level => {
+                const units = data[level];
+                
+                units.forEach(unit => {
+                    const indent = '— '.repeat(parseInt(level) - 1);
+                    const selected = unit.id == currentUnitId ? 'selected' : '';
+                    html += `<option value="${unit.id}" data-level="${level}" ${selected}>${indent}${unit.nama}</option>`;
+                });
+            });
+
+            unitSelect.innerHTML = html;
+        }
+    } catch (error) {
+        console.error('Error loading units:', error);
+        unitSelect.innerHTML = '<option value="">Error memuat data</option>';
+    }
+});
+
+// Trigger change event on page load to load units
+window.addEventListener('load', function() {
+    const pdSelect = document.getElementById('perangkat_daerah_id');
+    if (pdSelect.value) {
+        pdSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
 @endsection

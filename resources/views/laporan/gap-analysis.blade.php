@@ -62,13 +62,13 @@
     }
 
     .export-btn {
-        background: #10b981;
+        background: #2692b3;
         color: white;
         padding: 8px 16px;
         border: none;
         border-radius: 4px;
-        font-size: 12px;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 500;
         cursor: pointer;
         text-decoration: none;
         display: inline-flex;
@@ -78,7 +78,7 @@
     }
 
     .export-btn:hover {
-        background: #059669;
+        background: #146a84;
         color: white;
     }
 
@@ -143,7 +143,7 @@
     }
 
     .kode-badge {
-        background: #7ca2f3;
+        background: #8daff9;
         color: white;
         padding: 4px 8px;
         border-radius: 3px;
@@ -167,18 +167,18 @@
     .nama-cell {
         font-weight: 500;
         color: #1f2937;
-        width: 20%;
+        width: 35%;
     }
 
     .value-cell {
         text-align: center;
-        width: 8%;
+        width: 4%;
     }
 
     .value-badge {
         padding: 4px 8px;
         border-radius: 3px;
-        font-weight: 600;
+        font-weight: 500;
         font-size: 12px;
         display: inline-block;
         min-width: 35px;
@@ -190,7 +190,7 @@
     }
 
     .kebutuhan-badge {
-        background: #fef3c7;
+        background: #f8f098;
         color: #b45309;
     }
 
@@ -205,7 +205,7 @@
     }
 
     .gap-zero {
-        background: #f3f4f6;
+        background: #e9ecf2;
         color: #4b5563;
     }
 
@@ -217,15 +217,15 @@
     .status-badge {
         padding: 4px 8px;
         border-radius: 3px;
-        font-weight: 600;
+        font-weight: 500;
         font-size: 11px;
         text-transform: uppercase;
         display: inline-block;
     }
 
     .status-kekurangan {
-        background: #fee2e2;
-        color: #991b1b;
+        background: #f8ead4;
+        color: #a97601;
     }
 
     .status-terpenuhi {

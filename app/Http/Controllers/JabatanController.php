@@ -256,13 +256,52 @@ class JabatanController extends Controller
         }
     }
 
+    /**
+     * API: Get unit hierarchy for form (create/edit page)
+     * Return units grouped by level
+     */
+    public function unitsHierarchy($perangkatId): JsonResponse
+    {
+        try {
+            $units = UnitOrganisasi::where('perangkat_daerah_id', $perangkatId)
+                ->orderBy('kode', 'asc')
+                ->get();
+
+            // Group by level
+            $grouped = [];
+            foreach ($units as $unit) {
+                $level = $this->getCodeLevel($unit->kode);
+                if (!isset($grouped[$level])) {
+                    $grouped[$level] = [];
+                }
+                $grouped[$level][] = [
+                    'id' => $unit->id,
+                    'kode' => $unit->kode,
+                    'nama' => $unit->nama,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $grouped,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Units hierarchy error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat data unit',
+            ], 500);
+        }
+    }
+
     public function create(): View
     {
-        $unitOrganisasi = UnitOrganisasi::orderBy('nama')->get();
+        // FIXED: Tambahkan perangkatDaerah
+        $perangkatDaerah = PerangkatDaerah::orderBy('nama')->get();
         $jenisJabatan = JenisJabatan::all();
         $jenjang = Jenjang::all();
         
-        return view('jabatan.create', compact('unitOrganisasi', 'jenisJabatan', 'jenjang'));
+        return view('jabatan.create', compact('perangkatDaerah', 'jenisJabatan', 'jenjang'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -286,11 +325,12 @@ class JabatanController extends Controller
 
     public function edit(Jabatan $jabatan): View
     {
-        $unitOrganisasi = UnitOrganisasi::orderBy('nama')->get();
+        // FIXED: Tambahkan perangkatDaerah
+        $perangkatDaerah = PerangkatDaerah::orderBy('nama')->get();
         $jenisJabatan = JenisJabatan::all();
         $jenjang = Jenjang::all();
         
-        return view('jabatan.edit', compact('jabatan', 'unitOrganisasi', 'jenisJabatan', 'jenjang'));
+        return view('jabatan.edit', compact('jabatan', 'perangkatDaerah', 'jenisJabatan', 'jenjang'));
     }
 
     public function update(Request $request, Jabatan $jabatan): RedirectResponse
