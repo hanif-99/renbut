@@ -176,13 +176,30 @@ document.getElementById('perangkat_daerah_id').addEventListener('change', async 
             const data = json.data;
             let html = '<option value="">-- Pilih Unit Organisasi --</option>';
 
-            // Render by level - TANPA DUPLIKAT
+            // Build indented hierarchy menggunakan parent_kode
+            const unitsByKode = {};
+            const parentRelations = {};
+            
+            // Collect all units dan parent relations
+            Object.keys(data).forEach(level => {
+                data[level].forEach(unit => {
+                    unitsByKode[unit.kode] = unit;
+                    if (unit.parent_kode) {
+                        if (!parentRelations[unit.parent_kode]) {
+                            parentRelations[unit.parent_kode] = [];
+                        }
+                        parentRelations[unit.parent_kode].push(unit);
+                    }
+                });
+            });
+
+            // Render by level dengan proper indentation
             Object.keys(data).sort((a, b) => parseInt(a) - parseInt(b)).forEach(level => {
-                const units = data[level];
-                
-                units.forEach(unit => {
-                    const indent = '— '.repeat(parseInt(level) - 1);
-                    html += `<option value="${unit.id}" data-level="${level}">${indent}${unit.nama}</option>`;
+                const levelNum = parseInt(level);
+                data[level].forEach(unit => {
+                    const indent = '&nbsp;&nbsp;'.repeat(levelNum - 1);
+                    const prefix = levelNum > 1 ? '└─ ' : '';
+                    html += `<option value="${unit.id}" data-level="${levelNum}">${prefix}${unit.nama}</option>`;
                 });
             });
 

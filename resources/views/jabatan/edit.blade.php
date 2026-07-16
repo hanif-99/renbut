@@ -178,14 +178,14 @@ document.getElementById('perangkat_daerah_id').addEventListener('change', async 
             const data = json.data;
             let html = '<option value="">-- Pilih Unit Organisasi --</option>';
 
-            // Render by level - TANPA DUPLIKAT
+            // Render by level dengan proper indentation
             Object.keys(data).sort((a, b) => parseInt(a) - parseInt(b)).forEach(level => {
-                const units = data[level];
-                
-                units.forEach(unit => {
-                    const indent = '— '.repeat(parseInt(level) - 1);
+                const levelNum = parseInt(level);
+                data[level].forEach(unit => {
+                    const indent = '&nbsp;&nbsp;'.repeat(levelNum - 1);
+                    const prefix = levelNum > 1 ? '└─ ' : '';
                     const selected = unit.id == currentUnitId ? 'selected' : '';
-                    html += `<option value="${unit.id}" data-level="${level}" ${selected}>${indent}${unit.nama}</option>`;
+                    html += `<option value="${unit.id}" data-level="${levelNum}" ${selected}>${prefix}${unit.nama}</option>`;
                 });
             });
 

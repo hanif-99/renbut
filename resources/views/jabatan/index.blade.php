@@ -634,10 +634,28 @@ function renderUnits(detailsElement, units) {
     return;
   }
 
+  // Kelompokkan berdasarkan parent_kode
+  const unitsByParent = {};
+  const rootUnits = [];
+
+  units.forEach(unit => {
+    if (!unit.parent_kode || unit.parent_kode === '') {
+      rootUnits.push(unit);
+    } else {
+      if (!unitsByParent[unit.parent_kode]) {
+        unitsByParent[unit.parent_kode] = [];
+      }
+      unitsByParent[unit.parent_kode].push(unit);
+    }
+  });
+
   let html = '<div class="unit-list">';
-  units.forEach((unit, idx) => {
+  
+  // Render root units
+  rootUnits.sort((a, b) => (a.kode || '').localeCompare(b.kode || '')).forEach((unit, idx) => {
     const unitBodyId = `unit-body-${unit.id}`;
-    const isLast = idx === units.length - 1 ? 'true' : 'false';
+    const childUnits = unitsByParent[unit.kode] || [];
+    const isLast = idx === rootUnits.length - 1 ? 'true' : 'false';
     
     html += `
       <div class="unit-node" data-is-last="${isLast}">
@@ -652,9 +670,37 @@ function renderUnits(detailsElement, units) {
           </div>
         </div>
         <div class="unit-body" id="${unitBodyId}" data-loaded="0"></div>
-      </div>
     `;
+
+    // Render child units
+    if (childUnits.length > 0) {
+      html += '<div class="unit-list" style="margin-left: 20px;">';
+      childUnits.sort((a, b) => (a.kode || '').localeCompare(b.kode || '')).forEach((childUnit, childIdx) => {
+        const childBodyId = `unit-body-${childUnit.id}`;
+        const childIsLast = childIdx === childUnits.length - 1 ? 'true' : 'false';
+        
+        html += `
+          <div class="unit-node" data-is-last="${childIsLast}">
+            <div class="unit-header" onclick="toggleUnit(event, ${childUnit.id})">
+              <div class="unit-header-title">
+                <i class="icon fas fa-folder"></i>
+                <span class="name">${escapeHtml(childUnit.nama)}</span>
+              </div>
+              <div class="unit-header-right">
+                <span class="unit-badge">${childUnit.jabatan_count} Jabatan</span>
+                <span class="unit-toggle"><i class="fas fa-chevron-down"></i></span>
+              </div>
+            </div>
+            <div class="unit-body" id="${childBodyId}" data-loaded="0"></div>
+          </div>
+        `;
+      });
+      html += '</div>';
+    }
+
+    html += `</div>`;
   });
+
   html += '</div>';
 
   detailsElement.innerHTML = html;
@@ -721,7 +767,6 @@ function renderJabatan(unitBody, grouped) {
 
   let html = '<div class="jabatan-list">';
   
-  // Iterate over grouped jabatan by unit code
   const jabatanArray = [];
   Object.keys(grouped).sort().forEach(unitCode => {
     const jabatans = grouped[unitCode];
@@ -796,7 +841,6 @@ function renderSearchResults(container, jabatans) {
     return;
   }
 
-  // Group by PD -> Unit Name
   const grouped = {};
   jabatans.forEach(jab => {
     const pdName = jab._pd_name || 'Unknown';

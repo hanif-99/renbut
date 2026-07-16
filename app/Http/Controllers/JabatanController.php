@@ -21,6 +21,21 @@ class JabatanController extends Controller
     }
 
     /**
+     * Get parent kode from child kode
+     * Contoh: 1.1.2 -> 1.1
+     */
+    private function getParentCode($kode)
+    {
+        if (!$kode) return '';
+        $parts = explode('.', trim($kode));
+        if (count($parts) > 1) {
+            array_pop($parts);
+            return implode('.', $parts);
+        }
+        return '';
+    }
+
+    /**
      * Get unique unit code (remove last digit - it's jabatan number)
      */
     private function getUnitCode($kode)
@@ -28,7 +43,7 @@ class JabatanController extends Controller
         if (!$kode) return '';
         $parts = explode('.', trim($kode));
         if (count($parts) > 1) {
-            array_pop($parts); // Remove last digit
+            array_pop($parts);
             return implode('.', $parts);
         }
         return $kode;
@@ -257,22 +272,22 @@ class JabatanController extends Controller
     }
 
     /**
-     * API: Get unit hierarchy for form (create/edit page)
-     * Return units grouped by NAMA (UNIQUE) - tidak ada duplikat
+     * API: Get unit hierarchy for form - BUILD TREE BASED ON KODE STRUCTURE
+     * Struktur hierarki dibangun dari dot notation di kode
      */
     public function unitsHierarchy($perangkatId): JsonResponse
     {
         try {
-            $units = UnitOrganisasi::where('perangkat_daerah_id', $perangkatId)
-                ->orderBy('nama', 'asc')
+            // Get all units untuk perangkat ini, sorted by kode
+            $allUnits = UnitOrganisasi::where('perangkat_daerah_id', $perangkatId)
+                ->orderBy('kode', 'asc')
                 ->get();
 
-            // Group by NAMA untuk eliminate duplicates
+            // Remove duplicates by nama (keep first occurrence)
             $uniqueUnits = [];
             $seenNames = [];
             
-            foreach ($units as $unit) {
-                // Skip jika nama sudah pernah dilihat sebelumnya
+            foreach ($allUnits as $unit) {
                 if (in_array($unit->nama, $seenNames)) {
                     continue;
                 }
@@ -280,25 +295,35 @@ class JabatanController extends Controller
                 $uniqueUnits[] = $unit;
             }
 
-            // Kemudian group by level
-            $grouped = [];
+            // Build hierarchical tree based on kode structure (dot notation)
+            $unitsByKode = [];
             foreach ($uniqueUnits as $unit) {
+                $unitsByKode[$unit->kode] = $unit;
+            }
+
+            // Build tree structure: parent_kode => [children]
+            $tree = [];
+            
+            foreach ($uniqueUnits as $unit) {
+                $parentKode = $this->getParentCode($unit->kode);
                 $level = $this->getCodeLevel($unit->kode);
                 
-                if (!isset($grouped[$level])) {
-                    $grouped[$level] = [];
+                if (!isset($tree[$level])) {
+                    $tree[$level] = [];
                 }
                 
-                $grouped[$level][] = [
+                $tree[$level][] = [
                     'id' => $unit->id,
                     'kode' => $unit->kode,
                     'nama' => $unit->nama,
+                    'parent_kode' => $parentKode,
+                    'level' => $level,
                 ];
             }
 
             return response()->json([
                 'success' => true,
-                'data' => $grouped,
+                'data' => $tree,
             ]);
         } catch (\Exception $e) {
             \Log::error('Units hierarchy error: ' . $e->getMessage());
