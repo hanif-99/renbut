@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Ringkasan Formasi ASN')
+@section('title', 'Laporan Ringkasan')
 
 @section('content')
 <div class="row">

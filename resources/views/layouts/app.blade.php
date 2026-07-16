@@ -228,11 +228,6 @@
                                             <i class="fas fa-user"></i> Akun
                                         </h6>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#!">
-                                            <i class="fas fa-key"></i> Ganti Password
-                                        </a>
-                                    </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form method="POST" action="{{ route('logout') }}" style="display: inline;">

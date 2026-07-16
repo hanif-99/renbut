@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gap Analysis ASN')
+@section('title', 'Laporan Analisis')
 
 @section('content')
 <style>
@@ -243,15 +243,15 @@
         justify-content: center;
         align-items: center;
         gap: 8px;
-        margin-bottom: 24px;
+        margin-bottom: 8px;
         flex-wrap: wrap;
     }
 
     .pagination-btn {
-        padding: 6px 10px;
+        padding: 5px 12px;
         border: 1px solid #d1d5db;
         background: white;
-        color: #2563eb;
+        color: #2692b3;
         text-decoration: none;
         border-radius: 3px;
         font-weight: 500;
@@ -266,9 +266,9 @@
     }
 
     .pagination-btn.active {
-        background: #2563eb;
+        background: #3da3c3;
         color: white;
-        border-color: #2563eb;
+        border-color: #0ba6d6;
     }
 
     .pagination-btn.disabled {
@@ -322,11 +322,11 @@
     }
 
     .summary-card.warning .summary-value {
-        color: #d97706;
+        color: #dd831b;
     }
 
     .summary-card.info .summary-value {
-        color: #2563eb;
+        color: #2581eb;
     }
 
     .empty-state {

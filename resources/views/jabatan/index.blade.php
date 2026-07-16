@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Master Jabatan')
+@section('title', 'Master Data Jabatan')
 
 @section('css')
 <style>
@@ -464,7 +464,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center"> 
-        <h5 class="mb-0"><i class="fas fa-briefcase"></i> Master Jabatan</h5>
+        <h5 class="mb-0"><i class="fas fa-briefcase"></i> Master Data Jabatan</h5>
         <a href="{{ route('jabatan.create') }}" class="btn btn-sm btn-light">
           <i class="fas fa-plus"></i> Tambah Data
         </a>
