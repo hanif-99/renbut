@@ -51,7 +51,6 @@
             font-weight: 700;
         }
 
-        /* Reduced font-size for sidebar items to avoid overly large labels */
         .sidebar .nav-link {
             display: flex;
             align-items: center;
@@ -91,7 +90,6 @@
             color: rgba(255,255,255,0.95);
         }
 
-        /* content & cards */
         .card {
             border: none;
             box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
@@ -192,6 +190,14 @@
                     <i class="fas fa-briefcase"></i> <span>Jabatan</span>
                 </a>
 
+                <div class="nav-label mt-3">LAPORAN</div>
+                <a href="{{ route('laporan.gap-analysis') }}" class="nav-link @if(Request::routeIs('laporan.gap-analysis')) active @endif">
+                    <i class="fas fa-chart-line"></i> <span>Analisis</span>
+                </a>
+                <a href="{{ route('laporan.summary') }}" class="nav-link @if(Request::routeIs('laporan.summary')) active @endif">
+                    <i class="fas fa-file-alt"></i> <span>Ringkasan</span>
+                </a>
+
                 <div class="nav-label mt-3">PERENCANAAN</div>
                 {{-- Formasi ASN: aktif hanya bila route formasi.* kecuali formasi.yearly-plan --}}
                 <a href="{{ route('formasi.index') }}" class="nav-link @if(Request::routeIs('formasi.*') && !Request::routeIs('formasi.yearly-plan')) active @endif">
@@ -200,14 +206,6 @@
                 {{-- Rencana Tahunan: aktif bila route yearly-plan --}}
                 <a href="{{ route('formasi.yearly-plan') }}" class="nav-link @if(Request::routeIs('formasi.yearly-plan')) active @endif">
                     <i class="fas fa-chart-bar"></i> <span>Rencana Tahunan</span>
-                </a>
-
-                <div class="nav-label mt-3">LAPORAN</div>
-                <a href="{{ route('laporan.gap-analysis') }}" class="nav-link @if(Request::routeIs('laporan.gap-analysis')) active @endif">
-                    <i class="fas fa-chart-line"></i> <span>Analisis</span>
-                </a>
-                <a href="{{ route('laporan.summary') }}" class="nav-link @if(Request::routeIs('laporan.summary')) active @endif">
-                    <i class="fas fa-file-alt"></i> <span>Ringkasan</span>
                 </a>
             </div>
 
@@ -274,7 +272,6 @@
     <script src="https://cdn.datatables.net/rowgroup/1.4.1/js/dataTables.rowGroup.min.js"></script>
     
     <script>
-        // Initialize DataTables
         $(document).ready(function() {
             $('.datatable').DataTable({
                 responsive: true,
